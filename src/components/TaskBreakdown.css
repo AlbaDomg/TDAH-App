@@ -1,0 +1,72 @@
+.task-breakdown {
+  margin-top: 24px;
+  width: 100%;
+}
+
+.magic-btn {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-main);
+  border: 2px dashed #D4CCC0;
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  border-radius: var(--radius-md);
+}
+
+.magic-btn:hover {
+  background-color: #F0E9DC;
+  border-color: var(--color-accent-peach);
+  color: var(--color-accent-terracotta);
+}
+
+.magic-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.steps-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.step-item:hover {
+  transform: translateX(4px);
+  background-color: #EAE3D5;
+}
+
+.step-item.completed {
+  opacity: 0.6;
+}
+
+.step-item.completed .step-text {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.step-icon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.step-icon.checked {
+  color: var(--color-success-olive);
+}
+
+.step-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}

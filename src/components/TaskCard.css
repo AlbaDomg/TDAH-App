@@ -1,0 +1,68 @@
+.task-card {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.task-header {
+  margin-bottom: 24px;
+}
+
+.task-header h2 {
+  font-size: 2.2rem;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+
+.task-header p {
+  font-size: 1.2rem;
+  color: var(--color-text-muted);
+}
+
+.title-container, .edit-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.edit-title-input {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  border: 2px dashed var(--color-accent-peach);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  background: transparent;
+  width: 100%;
+}
+
+.icon-btn {
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.icon-btn:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-accent-terracotta);
+  transform: none;
+  box-shadow: none;
+}
+
+.complete-main-btn {
+  margin-top: 32px;
+  width: 100%;
+  padding: 16px;
+  font-size: 1.2rem;
+}

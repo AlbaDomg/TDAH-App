@@ -1,0 +1,101 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.dopamine-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-card-bg);
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-soft);
+}
+
+.star-icon {
+  color: var(--color-accent-peach);
+  filter: drop-shadow(0 2px 4px rgba(246, 184, 162, 0.4));
+}
+
+.points {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.paralysis-trigger-btn {
+  background-color: var(--color-danger-soft);
+  color: white;
+  padding: 10px 16px;
+  font-size: 1rem;
+}
+
+.paralysis-trigger-btn:hover {
+  background-color: #c97878;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  padding-bottom: 80px; /* Espacio para el nav inferior */
+}
+
+.no-tasks-view {
+  text-align: center;
+  padding: 40px;
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.no-tasks-view h2 {
+  margin-bottom: 24px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--color-card-bg);
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 10;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+}
+
+.nav-item:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-accent-peach);
+  transform: none;
+  box-shadow: none;
+}
+
+.nav-item.active {
+  color: var(--color-accent-terracotta);
+}

@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  /* Paleta de colores cálida y amigable */
+  --color-bg: #FDFBF7; /* Beige muy suave */
+  --color-bg-secondary: #F4EFE6; /* Beige texturizado */
+  --color-text-main: #4A443F; /* Marrón oscuro / Gris cálido */
+  --color-text-muted: #8B8378; /* Marrón grisáceo suave */
+  
+  --color-accent-terracotta: #E28F79;
+  --color-accent-peach: #F6B8A2;
+  --color-success-olive: #A4B494;
+  --color-danger-soft: #D98C8C;
+  
+  --color-card-bg: #FFFFFF;
+  
+  /* Radios amigables */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+
+  /* Sombras suaves */
+  --shadow-soft: 0 8px 24px rgba(74, 68, 63, 0.05);
+  --shadow-hover: 0 12px 32px rgba(74, 68, 63, 0.08);
+
+  /* Transiciones */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Tipografía */
+h1, h2, h3, h4 {
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+/* Botones genéricos */
+button {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 14px 24px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-main);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.primary {
+  background-color: var(--color-accent-terracotta);
+  color: white;
+}
+
+button.primary:hover {
+  background-color: #d17c66;
+}
+
+button.success {
+  background-color: var(--color-success-olive);
+  color: white;
+}
+
+button.success:hover {
+  background-color: #92a282;
+}
+
+/* Utilidades */
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pulse {
+  animation: pulseSoft 2s infinite ease-in-out;
+}
+
+@keyframes pulseSoft {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}

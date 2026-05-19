@@ -1,0 +1,75 @@
+.completed-history {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-soft);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.trophy-icon {
+  color: #F6B8A2; /* peach */
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 8px rgba(246, 184, 162, 0.4));
+}
+
+.empty-history {
+  text-align: center;
+  padding: 32px;
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+}
+
+.history-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--color-bg-secondary);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.check-icon {
+  color: var(--color-success-olive);
+  flex-shrink: 0;
+}
+
+.history-task-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-task-title {
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.history-time {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.slide-in {
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}

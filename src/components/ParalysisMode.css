@@ -1,0 +1,67 @@
+.paralysis-mode {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.paralysis-header {
+  margin-bottom: 32px;
+}
+
+.paralysis-header h2 {
+  font-size: 2rem;
+  color: var(--color-text-main);
+  margin-bottom: 12px;
+}
+
+.micro-task-card {
+  background-color: var(--color-card-bg);
+  padding: 40px 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  width: 100%;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.sparkle-icon {
+  color: var(--color-accent-peach);
+}
+
+.micro-task-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.paralysis-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.paralysis-actions button {
+  width: 100%;
+  padding: 16px;
+}
+
+.back-btn {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.back-btn:hover {
+  background-color: rgba(0,0,0,0.05);
+  box-shadow: none;
+}
