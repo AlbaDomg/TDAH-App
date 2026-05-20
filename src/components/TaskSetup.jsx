@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Plus, Play, Trash2 } from 'lucide-react';
+import { Plus, Play, Trash2, Clock } from 'lucide-react';
 import './TaskSetup.css';
 
 export const TaskSetup = ({ onStart }) => {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [scheduledTime, setScheduledTime] = useState('');
 
   const handleAddTask = (e) => {
     e.preventDefault();
@@ -12,9 +13,11 @@ export const TaskSetup = ({ onStart }) => {
       setTasks([...tasks, { 
         id: Date.now().toString(), 
         title: inputValue.trim(),
-        duration: 25 // Por defecto 25 min
+        duration: 25, // Por defecto 25 min
+        scheduledTime: scheduledTime || null
       }]);
       setInputValue('');
+      setScheduledTime('');
     }
   };
 
@@ -36,14 +39,25 @@ export const TaskSetup = ({ onStart }) => {
       </div>
 
       <form className="add-task-form" onSubmit={handleAddTask}>
-        <input 
-          type="text" 
-          placeholder="Ej: Escribir el informe, Llamar al dentista..." 
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          className="task-input"
-          autoFocus
-        />
+        <div className="input-group">
+          <input 
+            type="text" 
+            placeholder="Ej: Escribir el informe, Llamar al dentista..." 
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            className="task-input"
+            autoFocus
+          />
+          <div className="time-input-wrapper" title="Programar tarea para más tarde">
+            <Clock size={18} className="time-icon" />
+            <input
+              type="datetime-local"
+              value={scheduledTime}
+              onChange={(e) => setScheduledTime(e.target.value)}
+              className="task-time-input"
+            />
+          </div>
+        </div>
         <button type="submit" className="add-btn" disabled={!inputValue.trim()}>
           <Plus size={24} />
         </button>
@@ -55,7 +69,15 @@ export const TaskSetup = ({ onStart }) => {
           <ul>
             {tasks.map((task) => (
               <li key={task.id} className="preview-item">
-                <span>{task.title}</span>
+                <div className="preview-task-info">
+                  <span className="preview-title">{task.title}</span>
+                  {task.scheduledTime && (
+                    <span className="preview-time">
+                      <Clock size={14} /> 
+                      {new Date(task.scheduledTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                    </span>
+                  )}
+                </div>
                 <button className="delete-btn" onClick={() => removeTask(task.id)}>
                   <Trash2 size={18} />
                 </button>

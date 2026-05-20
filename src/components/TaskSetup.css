@@ -15,10 +15,18 @@
   display: flex;
   gap: 12px;
   margin-bottom: 32px;
+  align-items: flex-start;
+}
+
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .task-input {
-  flex: 1;
+  width: 100%;
   padding: 16px;
   font-size: 1.1rem;
   border: 2px solid var(--color-bg-secondary);
@@ -89,4 +97,46 @@
 .start-day-btn {
   width: 100%;
   padding: 16px;
+}
+
+.time-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-bg-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+.time-icon {
+  color: var(--color-text-muted);
+}
+
+.task-time-input {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  color: var(--color-text-main);
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.preview-task-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-title {
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.preview-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--color-accent-peach);
 }

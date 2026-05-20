@@ -25,6 +25,34 @@ function App() {
     requestNotificationPermission();
   }, []);
 
+  useEffect(() => {
+    // Revisar recordatorios cada minuto
+    const checkSchedules = setInterval(() => {
+      const now = new Date();
+      pendingTasks.forEach(task => {
+        if (task.scheduledTime) {
+          const scheduledDate = new Date(task.scheduledTime);
+          const diffInMinutes = (scheduledDate - now) / (1000 * 60);
+
+          // Si falta entre 0 y 1 minuto (hora exacta)
+          if (diffInMinutes > 0 && diffInMinutes <= 1) {
+            sendNotification("¡Es hora de tu tarea programada!", {
+              body: `Tu tarea "${task.title}" toca ahora. ¡A por ella!`
+            });
+          }
+          // Recordatorio anticipado (15 minutos antes)
+          else if (diffInMinutes > 14 && diffInMinutes <= 15) {
+            sendNotification("Recordatorio anticipado", {
+              body: `Faltan 15 minutos para tu tarea: "${task.title}".`
+            });
+          }
+        }
+      });
+    }, 60000);
+
+    return () => clearInterval(checkSchedules);
+  }, [pendingTasks]);
+
   const handleStartDay = (tasks) => {
     setPendingTasks(tasks);
     setCurrentView('focus');

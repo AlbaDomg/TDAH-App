@@ -70,3 +70,71 @@
   font-weight: 600;
   color: var(--color-text-main);
 }
+
+.breakdown-options {
+  display: flex;
+  gap: 12px;
+}
+
+.manual-btn {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-main);
+  border: 2px dashed #D4CCC0;
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.manual-btn:hover {
+  background-color: #EAE3D5;
+  border-color: var(--color-text-main);
+}
+
+.manual-steps-setup {
+  background-color: var(--color-bg-secondary);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.manual-steps-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+
+.manual-inputs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.manual-step-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 2px solid #D4CCC0;
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: inherit;
+  transition: var(--transition-smooth);
+}
+
+.manual-step-input:focus {
+  border-color: var(--color-accent-peach);
+}
+
+.save-steps-btn {
+  margin-top: 8px;
+  width: 100%;
+}
