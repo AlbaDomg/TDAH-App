@@ -1,8 +1,8 @@
 import React from 'react';
-import { CheckCircle2, Trophy } from 'lucide-react';
+import { CheckCircle2, Trophy, Trash2 } from 'lucide-react';
 import './CompletedHistory.css';
 
-export const CompletedHistory = ({ completedTasks = [] }) => {
+export const CompletedHistory = ({ completedTasks = [], onClearHistory }) => {
   return (
     <div className="completed-history fade-in">
       <div className="history-header">
@@ -16,21 +16,27 @@ export const CompletedHistory = ({ completedTasks = [] }) => {
           <p>Aún no has completado ninguna tarea, ¡pero el día es joven!</p>
         </div>
       ) : (
-        <ul className="history-list">
-          {completedTasks.map((task, index) => (
-            <li key={index} className="history-item slide-in">
-              <CheckCircle2 className="check-icon" size={24} />
-              <div className="history-task-info">
-                <span className="history-task-title">{task.title}</span>
-                {task.completedAt && (
-                  <span className="history-time">
-                    {new Date(task.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="history-list">
+            {completedTasks.map((task, index) => (
+              <li key={index} className="history-item slide-in">
+                <CheckCircle2 className="check-icon" size={24} />
+                <div className="history-task-info">
+                  <span className="history-task-title">{task.title}</span>
+                  {task.completedAt && (
+                    <span className="history-time">
+                      {new Date(task.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+          <button className="clear-history-btn" onClick={onClearHistory}>
+            <Trash2 size={18} />
+            Borrar Historial
+          </button>
+        </>
       )}
     </div>
   );

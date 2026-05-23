@@ -143,6 +143,12 @@ function App() {
     setCurrentView('setup');
   };
 
+  const handleClearHistory = () => {
+    if (window.confirm("¿Seguro que quieres borrar todo tu historial de logros? Esto no afectará a tus puntos de dopamina.")) {
+      setCompletedTasks([]);
+    }
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -206,7 +212,7 @@ function App() {
         )}
 
         {currentView === 'history' && (
-          <CompletedHistory completedTasks={completedTasks} />
+          <CompletedHistory completedTasks={completedTasks} onClearHistory={handleClearHistory} />
         )}
 
         {currentView === 'calm' && (
