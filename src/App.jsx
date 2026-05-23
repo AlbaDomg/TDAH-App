@@ -62,7 +62,7 @@ function App() {
     sendNotification("¡Día planificado!", { body: "Es hora de empezar con tu primera tarea." });
   };
 
-  const currentTask = pendingTasks.find(t => t.id === activeTaskId && !t.completed) || null;
+  const currentTask = pendingTasks.find(t => t.id === activeTaskId) || null;
 
   const handleCompleteTaskById = (taskId) => {
     const taskToComplete = pendingTasks.find(t => t.id === taskId);
@@ -72,15 +72,13 @@ function App() {
       const completedTime = new Date().toISOString();
       setCompletedTasks([...completedTasks, { ...taskToComplete, completed: true, completedAt: completedTime }]);
       
-      setPendingTasks(prev => 
-        prev.map(t => t.id === taskId ? { ...t, completed: true, completedAt: completedTime } : t)
-      );
+      setPendingTasks(prev => prev.filter(t => t.id !== taskId));
       
       if (activeTaskId === taskId) {
         setActiveTaskId(null);
       }
       
-      const remainingTasks = pendingTasks.filter(t => !t.completed && t.id !== taskId);
+      const remainingTasks = pendingTasks.filter(t => t.id !== taskId);
       if (remainingTasks.length > 0) {
         sendNotification("¡Tarea completada!", { body: "¡Gran trabajo! Tómate un respiro antes de seguir." });
       } else {

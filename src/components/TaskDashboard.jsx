@@ -35,8 +35,7 @@ export const TaskDashboard = ({
     return `${task.duration || 25} min`;
   };
 
-  const pendingTasksList = tasks.filter(t => !t.completed);
-  const completedTasksList = tasks.filter(t => t.completed);
+  const pendingTasksList = tasks;
 
   return (
     <div className="task-dashboard fade-in">
@@ -175,42 +174,6 @@ export const TaskDashboard = ({
               </div>
             );
           })
-        )}
-
-        {completedTasksList.length > 0 && (
-          <div className="completed-section fade-in">
-            <h4 className="completed-section-title">Completadas hoy ({completedTasksList.length})</h4>
-            <div className="completed-task-list">
-              {completedTasksList.map((task) => (
-                <div key={task.id} className="dashboard-task-card completed-task-card">
-                  <div className="task-info">
-                    <span className="task-title completed-title">{task.title}</span>
-                    <div className="task-meta-tags">
-                      <span className="duration-tag completed-duration-tag">
-                        Completado
-                      </span>
-                      {task.completedAt && (
-                        <span className="scheduled-tag completed-time-tag">
-                          <CheckCircle2 size={12} className="check-circle-icon" />
-                          a las {new Date(task.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="task-actions">
-                    <button 
-                      className="action-btn delete-btn"
-                      onClick={() => onDeleteTask(task.id)}
-                      title="Eliminar tarea definitivamente"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         )}
       </div>
     </div>
