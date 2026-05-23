@@ -61,8 +61,30 @@
 }
 
 .complete-main-btn {
-  margin-top: 32px;
   width: 100%;
   padding: 16px;
   font-size: 1.2rem;
 }
+
+.exit-focus-btn {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-main);
+  border: 2px solid transparent;
+  padding: 16px;
+  font-size: 1.1rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.exit-focus-btn:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-accent-peach);
+  color: var(--color-accent-terracotta);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+

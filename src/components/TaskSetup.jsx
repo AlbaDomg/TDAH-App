@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Plus, Play, Trash2, Clock } from 'lucide-react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import './TaskSetup.css';
 
 export const TaskSetup = ({ onStart }) => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useLocalStorage('adhd_task_setup_draft', []);
   const [inputValue, setInputValue] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
 
@@ -28,6 +29,8 @@ export const TaskSetup = ({ onStart }) => {
   const handleStart = () => {
     if (tasks.length > 0) {
       onStart(tasks);
+      // Limpiar el borrador después de empezar el día
+      setTasks([]);
     }
   };
 

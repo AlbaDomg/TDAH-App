@@ -90,7 +90,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 4s ease-in-out;
+  transition: width 4s ease-in-out, height 4s ease-in-out, background-color 4s ease-in-out, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.breathing-circle.idle {
+  width: 100px;
+  height: 100px;
+  background-color: var(--color-success-olive);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(164, 180, 148, 0.3);
+}
+
+.breathing-circle.idle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(164, 180, 148, 0.45);
+  background-color: #92a282;
+}
+
+.breathing-circle.idle .breathing-text {
+  color: white;
+  opacity: 1;
 }
 
 .breathing-circle.inhale {

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { VisualTimer } from './VisualTimer';
 import { TaskBreakdown } from './TaskBreakdown';
-import { Check, Edit2, Save } from 'lucide-react';
+import { Check, Edit2, Save, ArrowLeft } from 'lucide-react';
 import './TaskCard.css';
 
-export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle }) => {
+export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle, onExitFocus, onTimeUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task ? task.title : '');
 
@@ -44,17 +44,28 @@ export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle }) =>
         {task.description && <p>{task.description}</p>}
       </div>
 
-      <VisualTimer durationMinutes={task.duration || 25} />
+      <VisualTimer 
+        durationMinutes={task.duration || 25} 
+        remainingSeconds={task.remainingSeconds}
+        onTimeUpdate={onTimeUpdate}
+      />
       
       <TaskBreakdown 
         taskName={task.title} 
         onStepComplete={onStepComplete} 
       />
 
-      <button className="primary complete-main-btn" onClick={onComplete}>
-        <Check size={24} />
-        Completar Tarea Principal
-      </button>
+      <div className="task-actions-container" style={{ display: 'flex', gap: '16px', width: '100%', marginTop: '32px' }}>
+        <button className="primary complete-main-btn" onClick={onComplete} style={{ flex: 2, marginTop: 0 }}>
+          <Check size={24} />
+          Completar Tarea
+        </button>
+        <button className="exit-focus-btn" onClick={onExitFocus} style={{ flex: 1 }}>
+          <ArrowLeft size={20} />
+          Salir
+        </button>
+      </div>
     </div>
   );
 };
+

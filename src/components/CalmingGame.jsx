@@ -29,17 +29,17 @@ const BreathingGame = () => {
         <p>Sigue el círculo. Te ayudará a bajar el ritmo.</p>
       </div>
       <div className="breathing-container">
-        {!isStarted ? (
-          <button className="start-breathe-btn" onClick={() => setIsStarted(true)}>Empezar</button>
-        ) : (
-          <div className={`breathing-circle ${phase}`}>
-            <span className="breathing-text">
-              {phase === 'inhale' && 'Inhala...'}
-              {phase === 'hold' && 'Mantén...'}
-              {phase === 'exhale' && 'Exhala...'}
-            </span>
-          </div>
-        )}
+        <div 
+          className={`breathing-circle ${isStarted ? phase : 'idle'}`}
+          onClick={() => !isStarted && setIsStarted(true)}
+        >
+          <span className="breathing-text">
+            {!isStarted && 'Empezar'}
+            {isStarted && phase === 'inhale' && 'Inhala...'}
+            {isStarted && phase === 'hold' && 'Mantén...'}
+            {isStarted && phase === 'exhale' && 'Exhala...'}
+          </span>
+        </div>
       </div>
     </div>
   );
