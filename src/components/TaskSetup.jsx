@@ -7,6 +7,7 @@ export const TaskSetup = ({ onStart }) => {
   const [tasks, setTasks] = useLocalStorage('adhd_task_setup_draft', []);
   const [inputValue, setInputValue] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
+  const [duration, setDuration] = useState(25);
 
   const handleAddTask = (e) => {
     e.preventDefault();
@@ -14,11 +15,12 @@ export const TaskSetup = ({ onStart }) => {
       setTasks([...tasks, { 
         id: Date.now().toString(), 
         title: inputValue.trim(),
-        duration: 25, // Por defecto 25 min
+        duration: duration,
         scheduledTime: scheduledTime || null
       }]);
       setInputValue('');
       setScheduledTime('');
+      setDuration(25); // reset a 25 min estándar
     }
   };
 
@@ -51,14 +53,32 @@ export const TaskSetup = ({ onStart }) => {
             className="task-input"
             autoFocus
           />
-          <div className="time-input-wrapper" title="Programar tarea para más tarde">
-            <Clock size={18} className="time-icon" />
-            <input
-              type="datetime-local"
-              value={scheduledTime}
-              onChange={(e) => setScheduledTime(e.target.value)}
-              className="task-time-input"
-            />
+          <div className="setup-controls-row" style={{ display: 'flex', gap: '12px', width: '100%', flexWrap: 'wrap' }}>
+            <div className="time-input-wrapper" title="Programar tarea para más tarde">
+              <Clock size={18} className="time-icon" />
+              <input
+                type="datetime-local"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                className="task-time-input"
+              />
+            </div>
+            
+            <div className="duration-input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--color-bg-secondary)', padding: '8px 16px', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ fontSize: '0.95rem', color: 'var(--color-text-muted)', fontWeight: '500' }}>Duración:</span>
+              <select
+                value={duration}
+                onChange={(e) => setDuration(parseInt(e.target.value) || 25)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--color-text-main)', outline: 'none', fontSize: '0.95rem', cursor: 'pointer', fontFamily: 'inherit', fontWeight: '600' }}
+              >
+                <option value={5}>5 min (Super rápido)</option>
+                <option value={10}>10 min (Cortito)</option>
+                <option value={15}>15 min (Rápido)</option>
+                <option value={25}>25 min (Estándar)</option>
+                <option value={40}>40 min (Enfoque)</option>
+                <option value={60}>60 min (Foco profundo)</option>
+              </select>
+            </div>
           </div>
         </div>
         <button type="submit" className="add-btn" disabled={!inputValue.trim()}>
@@ -74,12 +94,17 @@ export const TaskSetup = ({ onStart }) => {
               <li key={task.id} className="preview-item">
                 <div className="preview-task-info">
                   <span className="preview-title">{task.title}</span>
-                  {task.scheduledTime && (
-                    <span className="preview-time">
-                      <Clock size={14} /> 
-                      {new Date(task.scheduledTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                  <div className="preview-meta-tags" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
+                    <span className="preview-duration-tag" style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', backgroundColor: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: '4px', fontWeight: '600' }}>
+                      {task.duration} min
                     </span>
-                  )}
+                    {task.scheduledTime && (
+                      <span className="preview-time">
+                        <Clock size={14} /> 
+                        {new Date(task.scheduledTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <button className="delete-btn" onClick={() => removeTask(task.id)}>
                   <Trash2 size={18} />
