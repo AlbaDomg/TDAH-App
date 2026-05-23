@@ -54,17 +54,18 @@ export const TaskSetup = ({ onStart }) => {
             autoFocus
           />
           <div className="setup-controls-row" style={{ display: 'flex', gap: '12px', width: '100%', flexWrap: 'wrap' }}>
-            <div className="time-input-wrapper" title="Programar tarea para más tarde">
+            <div className="time-input-wrapper" title="Programar tarea para más tarde" style={{ flex: 1, minWidth: '180px' }}>
               <Clock size={18} className="time-icon" />
               <input
                 type="datetime-local"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
                 className="task-time-input"
+                style={{ width: '100%' }}
               />
             </div>
             
-            <div className="duration-input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--color-bg-secondary)', padding: '8px 16px', borderRadius: 'var(--radius-sm)' }}>
+            <div className="duration-input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--color-bg-secondary)', padding: '8px 16px', borderRadius: 'var(--radius-sm)', flex: 1, minWidth: '180px', justifyContent: 'space-between' }}>
               <span style={{ fontSize: '0.95rem', color: 'var(--color-text-muted)', fontWeight: '500' }}>Duración:</span>
               <select
                 value={duration}
@@ -81,8 +82,9 @@ export const TaskSetup = ({ onStart }) => {
             </div>
           </div>
         </div>
-        <button type="submit" className="add-btn" disabled={!inputValue.trim()}>
-          <Plus size={24} />
+        <button type="submit" className="registrar-tarea-btn" disabled={!inputValue.trim()}>
+          <Plus size={20} />
+          Registrar Tarea
         </button>
       </form>
 
