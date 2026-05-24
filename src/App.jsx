@@ -72,20 +72,17 @@ function App() {
       const completedTime = new Date().toISOString();
       setCompletedTasks([...completedTasks, { ...taskToComplete, completed: true, completedAt: completedTime }]);
       
-      setPendingTasks(prev => prev.filter(t => t.id !== taskId));
+      // Reiniciar el temporizador de la tarea en Foco para futuras sesiones sin eliminarla
+      setPendingTasks(prev => 
+        prev.map(t => t.id === taskId ? { ...t, remainingSeconds: undefined } : t)
+      );
       
       if (activeTaskId === taskId) {
         setActiveTaskId(null);
       }
       
-      const remainingTasks = pendingTasks.filter(t => t.id !== taskId);
-      if (remainingTasks.length > 0) {
-        sendNotification("¡Tarea completada!", { body: "¡Gran trabajo! Tómate un respiro antes de seguir." });
-      } else {
-        sendNotification("¡Día completado!", { body: "Has terminado todas tus tareas. ¡Disfruta tu descanso!" });
-        alert("¡Has completado todas tus tareas de hoy! Eres genial.");
-        setCurrentView('history');
-      }
+      sendNotification("¡Tarea completada!", { body: "¡Buen trabajo! La tarea se ha guardado en logros y reiniciado en Foco." });
+      alert("¡Tarea completada! Se ha guardado en tus Logros y se ha reiniciado en el panel de Foco para que puedas volver a usarla.");
     }
   };
 
