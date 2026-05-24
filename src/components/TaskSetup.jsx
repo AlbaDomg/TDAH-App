@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, Play, Trash2, Clock } from 'lucide-react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { Plus, Clock } from 'lucide-react';
 import './TaskSetup.css';
 
-export const TaskSetup = ({ onStart }) => {
-  const [tasks, setTasks] = useLocalStorage('adhd_task_setup_draft', []);
+export const TaskSetup = ({ onAddTask }) => {
   const [inputValue, setInputValue] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   const [duration, setDuration] = useState(25);
@@ -12,27 +10,14 @@ export const TaskSetup = ({ onStart }) => {
   const handleAddTask = (e) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      setTasks([...tasks, { 
-        id: Date.now().toString(), 
-        title: inputValue.trim(),
-        duration: duration,
-        scheduledTime: scheduledTime || null
-      }]);
+      onAddTask(
+        inputValue.trim(),
+        duration,
+        scheduledTime || null
+      );
       setInputValue('');
       setScheduledTime('');
       setDuration(25); // reset a 25 min estándar
-    }
-  };
-
-  const removeTask = (id) => {
-    setTasks(tasks.filter(t => t.id !== id));
-  };
-
-  const handleStart = () => {
-    if (tasks.length > 0) {
-      onStart(tasks);
-      // Limpiar el borrador después de empezar el día
-      setTasks([]);
     }
   };
 
@@ -88,41 +73,6 @@ export const TaskSetup = ({ onStart }) => {
         </button>
       </form>
 
-      {tasks.length > 0 && (
-        <div className="task-list-preview">
-          <h3>Tu lista para hoy:</h3>
-          <ul>
-            {tasks.map((task) => (
-              <li key={task.id} className="preview-item">
-                <div className="preview-task-info">
-                  <span className="preview-title">{task.title}</span>
-                  <div className="preview-meta-tags" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
-                    <span className="preview-duration-tag" style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', backgroundColor: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: '4px', fontWeight: '600' }}>
-                      {task.duration} min
-                    </span>
-                    {task.scheduledTime && (
-                      <span className="preview-time">
-                        <Clock size={14} /> 
-                        {new Date(task.scheduledTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <button className="delete-btn" onClick={() => removeTask(task.id)}>
-                  <Trash2 size={18} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {tasks.length > 0 && (
-        <button className="primary start-day-btn" onClick={handleStart}>
-          <Play size={20} />
-          ¡A por ello!
-        </button>
-      )}
     </div>
   );
 };

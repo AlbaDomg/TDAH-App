@@ -23,6 +23,13 @@ function App() {
   useEffect(() => {
     // Pedir permiso de notificaciones al inicio
     requestNotificationPermission();
+    
+    // Limpiar borrador obsoleto para evitar conflictos
+    try {
+      localStorage.removeItem('adhd_task_setup_draft');
+    } catch (e) {
+      console.warn('Error clearing legacy draft:', e);
+    }
   }, []);
 
   useEffect(() => {
@@ -110,6 +117,19 @@ function App() {
     sendNotification("Tarea añadida", { body: `Añadiste "${title}" a tu lista diaria.` });
   };
 
+  const handleAddTaskFromSetup = (title, duration, scheduledTime) => {
+    const newTask = {
+      id: Date.now().toString(),
+      title,
+      duration,
+      scheduledTime: scheduledTime || null
+    };
+    setPendingTasks(prev => [...prev, newTask]);
+    setCurrentView('focus');
+    setActiveTaskId(null); // Asegura ir a la lista de tareas del dashboard
+    sendNotification("Tarea añadida", { body: `Añadiste "${title}" a tu lista diaria.` });
+  };
+
   const handleUpdateRemainingTime = (taskId, seconds) => {
     setPendingTasks(prev => 
       prev.map(t => t.id === taskId ? { ...t, remainingSeconds: seconds } : t)
@@ -172,7 +192,7 @@ function App() {
 
       <main className="main-content">
         {currentView === 'setup' && (
-          <TaskSetup onStart={handleStartDay} />
+          <TaskSetup onAddTask={handleAddTaskFromSetup} />
         )}
 
         {currentView === 'focus' && (
