@@ -252,13 +252,7 @@ export const TaskDashboard = ({
                         <Edit2 size={18} />
                       </button>
 
-                      <button 
-                        className="action-btn complete-btn"
-                        onClick={() => onCompleteTask(task.id)}
-                        title="Completar sin temporizador"
-                      >
-                        <Check size={18} />
-                      </button>
+
 
                       <button 
                         className="action-btn delete-btn"
