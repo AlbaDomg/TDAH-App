@@ -95,7 +95,7 @@ export const TaskDashboard = ({
           onClick={() => setShowAddForm(!showAddForm)}
         >
           <Plus size={18} />
-          {showAddForm ? 'Cancelar' : 'Añadir tarea rápida'}
+          {showAddForm ? 'Cancelar' : 'Añadir una tarea'}
         </button>
       </div>
 
