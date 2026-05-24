@@ -147,6 +147,18 @@ function App() {
     }
   };
 
+  const handleDeleteCompletedTask = (taskId) => {
+    if (window.confirm("¿Seguro que quieres borrar este logro?")) {
+      setCompletedTasks(prev => prev.filter(t => t.id !== taskId));
+    }
+  };
+
+  const handleUpdateCompletedTask = (taskId, updatedFields) => {
+    setCompletedTasks(prev => 
+      prev.map(t => t.id === taskId ? { ...t, ...updatedFields } : t)
+    );
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -210,7 +222,12 @@ function App() {
         )}
 
         {currentView === 'history' && (
-          <CompletedHistory completedTasks={completedTasks} onClearHistory={handleClearHistory} />
+          <CompletedHistory 
+            completedTasks={completedTasks} 
+            onClearHistory={handleClearHistory}
+            onDeleteTask={handleDeleteCompletedTask}
+            onUpdateTask={handleUpdateCompletedTask}
+          />
         )}
 
         {currentView === 'calm' && (
