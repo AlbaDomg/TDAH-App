@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { VisualTimer } from './VisualTimer';
 import { TaskBreakdown } from './TaskBreakdown';
 import { Check, Edit2, Save, ArrowLeft } from 'lucide-react';
@@ -7,12 +7,18 @@ import './TaskCard.css';
 export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle, onExitFocus, onTimeUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task ? task.title : '');
+  const isCompletingRef = useRef(false);
 
   const handleSaveTitle = () => {
     if (editTitle.trim()) {
       onUpdateTitle(task.id, editTitle.trim());
     }
     setIsEditing(false);
+  };
+
+  const handleCompleteClick = () => {
+    isCompletingRef.current = true;
+    onComplete();
   };
 
   if (!task) return null;
@@ -47,7 +53,11 @@ export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle, onEx
       <VisualTimer 
         durationMinutes={task.duration || 25} 
         remainingSeconds={task.remainingSeconds}
-        onTimeUpdate={onTimeUpdate}
+        onTimeUpdate={(seconds) => {
+          if (!isCompletingRef.current && onTimeUpdate) {
+            onTimeUpdate(seconds);
+          }
+        }}
       />
       
       <TaskBreakdown 
@@ -56,7 +66,7 @@ export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle, onEx
       />
 
       <div className="task-actions-container" style={{ display: 'flex', gap: '16px', width: '100%', marginTop: '32px' }}>
-        <button className="primary complete-main-btn" onClick={onComplete} style={{ flex: 2, marginTop: 0 }}>
+        <button className="primary complete-main-btn" onClick={handleCompleteClick} style={{ flex: 2, marginTop: 0 }}>
           <Check size={24} />
           Completar Tarea
         </button>
