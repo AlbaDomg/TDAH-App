@@ -1,0 +1,651 @@
+/* Estilos premium para la sección de Listas */
+
+.lists-section {
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+.lists-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.lists-header h2 {
+  font-size: 1.8rem;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+
+.lists-header p {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Botón Añadir Lista */
+.add-list-btn {
+  width: 100%;
+  margin-bottom: 24px;
+  background-color: var(--color-accent-terracotta);
+  color: white;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(226, 143, 121, 0.2);
+}
+
+.add-list-btn:hover {
+  background-color: #d17c66;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(226, 143, 121, 0.3);
+}
+
+/* Formulario Crear Lista */
+.create-list-card {
+  background-color: var(--color-card-bg);
+  border: 2px solid var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-soft);
+}
+
+.create-list-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  color: var(--color-text-main);
+}
+
+.suggestions-grid {
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.suggestions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suggestion-chip {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-weight: 600;
+}
+
+.suggestion-chip:hover {
+  background-color: var(--color-bg-secondary);
+  transform: translateY(-1px);
+}
+
+.custom-create-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.list-name-input {
+  flex: 1;
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--color-text-main);
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.list-name-input:focus {
+  border-color: var(--color-accent-peach);
+  background-color: white;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.cancel-btn:hover {
+  color: var(--color-danger-soft);
+}
+
+/* Grid de Listas */
+.lists-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.list-card {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(139, 131, 120, 0.08);
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.list-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background-color: var(--color-accent-peach);
+}
+
+.list-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(226, 143, 121, 0.15);
+}
+
+.list-card.completed-card::before {
+  background-color: var(--color-success-olive);
+}
+
+.list-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.list-title-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 75%;
+}
+
+.list-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-icon-btn {
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.action-icon-btn:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.action-icon-btn.edit:hover {
+  color: var(--color-accent-terracotta);
+}
+
+.action-icon-btn.delete:hover {
+  color: var(--color-danger-soft);
+}
+
+.list-card-body {
+  margin-bottom: 12px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.completed-badge {
+  background-color: #f6efe2;
+  color: var(--color-success-olive);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.progress-bar-container {
+  background-color: var(--color-bg-secondary);
+  height: 8px;
+  border-radius: var(--radius-full);
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.list-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 0.88rem;
+  color: var(--color-accent-terracotta);
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+/* Edición inline */
+.inline-edit-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.inline-edit-input {
+  flex: 1;
+  border: 2px solid var(--color-accent-peach);
+  background-color: white;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  outline: none;
+}
+
+.icon-save-btn {
+  background-color: var(--color-success-olive);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.icon-save-btn:hover {
+  background-color: #92a282;
+}
+
+/* Vacío State */
+.empty-lists-state {
+  text-align: center;
+  padding: 48px 24px;
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  border: 2px dashed rgba(139, 131, 120, 0.15);
+}
+
+.empty-icon-bubble {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 6px;
+}
+
+.empty-desc {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* VISTA DE LISTA ACTIVA */
+.active-list-view {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 24px;
+  width: 100%;
+}
+
+.active-list-header {
+  border-bottom: 2px solid var(--color-bg-secondary);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.back-btn-icon {
+  background: transparent;
+  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  margin-left: -12px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+}
+
+.back-btn-icon:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-main);
+}
+
+.active-title-container {
+  margin-bottom: 16px;
+}
+
+.active-title-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.active-title-display h2 {
+  font-size: 1.8rem;
+  color: var(--color-text-main);
+  word-break: break-word;
+}
+
+.edit-title-btn {
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.edit-title-btn:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-accent-terracotta);
+}
+
+.inline-title-edit {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.inline-title-input {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border: 2px solid var(--color-accent-peach);
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: inherit;
+  color: var(--color-text-main);
+}
+
+.title-save-btn {
+  background-color: var(--color-success-olive);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Barra progreso en lista activa */
+.active-progress-section {
+  background-color: var(--color-bg);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+}
+
+.progress-text-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.active-progress-bar {
+  background-color: var(--color-bg-secondary);
+  height: 10px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.active-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Formulario Añadir Item */
+.add-item-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.new-item-input {
+  flex: 1;
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--color-text-main);
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.new-item-input:focus {
+  border-color: var(--color-accent-peach);
+  background-color: white;
+}
+
+.add-item-submit {
+  background-color: var(--color-text-main);
+  color: white;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-item-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-item-submit:hover:not(:disabled) {
+  background-color: var(--color-accent-terracotta);
+}
+
+/* Listado de elementos */
+.items-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 120px;
+}
+
+.items-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--color-bg);
+  border: 1px solid rgba(139, 131, 120, 0.05);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  user-select: none;
+  min-height: 52px;
+}
+
+.todo-item:hover {
+  background-color: var(--color-bg-secondary);
+  transform: translateX(2px);
+}
+
+.checkbox-icon {
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.checkbox-icon.checked {
+  color: var(--color-success-olive);
+}
+
+.item-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  flex: 1;
+  word-break: break-word;
+}
+
+.text-strike {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.dopamine-badge {
+  background-color: #fff4f0;
+  color: var(--color-accent-terracotta);
+  border: 1px solid rgba(226, 143, 121, 0.15);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.todo-item.completed {
+  background-color: #faf9f6;
+  border-color: transparent;
+}
+
+.todo-item.completed:hover {
+  background-color: var(--color-bg);
+}
+
+.empty-items-state {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-muted);
+}
+
+.empty-items-state .subtext {
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* Footer de lista activa */
+.active-list-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  border-top: 2px solid var(--color-bg-secondary);
+  padding-top: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-action-btn {
+  font-size: 0.95rem;
+  padding: 10px 18px;
+}
+
+.footer-action-btn.clean {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-main);
+}
+
+.footer-action-btn.clean:hover:not(:disabled) {
+  background-color: #ebdcb9;
+}
+
+.footer-action-btn.clean:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.footer-action-btn.delete {
+  background: transparent;
+  color: var(--color-danger-soft);
+}
+
+.footer-action-btn.delete:hover {
+  background-color: #fff0f0;
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

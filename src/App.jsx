@@ -6,6 +6,7 @@ import { TaskSetup } from './components/TaskSetup';
 import { CompletedHistory } from './components/CompletedHistory';
 import { CalmingGame } from './components/CalmingGame';
 import { TaskDashboard } from './components/TaskDashboard';
+import { ListsSection } from './components/ListsSection';
 import { triggerReward } from './utils/RewardSystem';
 import { requestNotificationPermission, sendNotification } from './utils/Notifications';
 import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList } from 'lucide-react';
@@ -16,8 +17,9 @@ function App() {
   const [completedTasks, setCompletedTasks] = useLocalStorage('adhd_completed_tasks', []);
   const [pendingTasks, setPendingTasks] = useLocalStorage('adhd_pending_tasks', []);
   const [activeTaskId, setActiveTaskId] = useLocalStorage('adhd_active_task_id', null);
+  const [lists, setLists] = useLocalStorage('adhd_custom_lists', []);
   
-  // 'setup', 'focus', 'history', 'calm', 'paralysis'
+  // 'setup', 'focus', 'history', 'calm', 'paralysis', 'lists'
   const [currentView, setCurrentView] = useLocalStorage('adhd_current_view', pendingTasks.length > 0 ? 'focus' : 'setup');
 
   useEffect(() => {
@@ -243,6 +245,15 @@ function App() {
         {currentView === 'calm' && (
           <CalmingGame />
         )}
+
+        {currentView === 'lists' && (
+          <ListsSection 
+            lists={lists} 
+            setLists={setLists} 
+            onAddPoints={(points) => setDopaminePoints(prev => prev + points)}
+            triggerConfetti={triggerReward}
+          />
+        )}
       </main>
 
       <nav className="bottom-nav">
@@ -252,6 +263,13 @@ function App() {
         >
           <ListTodo size={24} />
           <span>Foco</span>
+        </button>
+        <button 
+          className={`nav-item ${currentView === 'lists' ? 'active' : ''}`}
+          onClick={() => setCurrentView('lists')}
+        >
+          <LayoutList size={24} />
+          <span>Listas</span>
         </button>
         <button 
           className={`nav-item ${currentView === 'history' ? 'active' : ''}`}
