@@ -313,22 +313,28 @@ function App() {
   };
 
   const handleAddTaskDuringDay = (title, duration, scheduledTime) => {
+    const diffInMins = scheduledTime ? (new Date(scheduledTime) - new Date()) / (1000 * 60) : 0;
     const newTask = {
       id: Date.now().toString(),
       title,
       duration,
-      scheduledTime: scheduledTime || null
+      scheduledTime: scheduledTime || null,
+      notifiedEarly: scheduledTime ? diffInMins <= 15 : false,
+      notifiedExact: false
     };
     setPendingTasks(prev => [...prev, newTask]);
     sendNotification("Tarea añadida", { body: `Añadiste "${title}" a tu lista diaria.` });
   };
 
   const handleAddTaskFromSetup = (title, duration, scheduledTime) => {
+    const diffInMins = scheduledTime ? (new Date(scheduledTime) - new Date()) / (1000 * 60) : 0;
     const newTask = {
       id: Date.now().toString(),
       title,
       duration,
-      scheduledTime: scheduledTime || null
+      scheduledTime: scheduledTime || null,
+      notifiedEarly: scheduledTime ? diffInMins <= 15 : false,
+      notifiedExact: false
     };
     setPendingTasks(prev => [...prev, newTask]);
     setCurrentView('focus');
@@ -372,7 +378,24 @@ function App() {
 
   const handleUpdateTask = (taskId, updatedFields) => {
     setPendingTasks(prev => 
-      prev.map(t => t.id === taskId ? { ...t, ...updatedFields } : t)
+      prev.map(t => {
+        if (t.id === taskId) {
+          const merged = { ...t, ...updatedFields };
+          // Si cambian la hora, recalcular si ya deben omitir el aviso de 15 minutos o reiniciarlo
+          if (updatedFields.scheduledTime !== undefined) {
+            if (merged.scheduledTime) {
+              const diffInMins = (new Date(merged.scheduledTime) - new Date()) / (1000 * 60);
+              merged.notifiedEarly = diffInMins <= 15;
+              merged.notifiedExact = false;
+            } else {
+              merged.notifiedEarly = false;
+              merged.notifiedExact = false;
+            }
+          }
+          return merged;
+        }
+        return t;
+      })
     );
   };
 
