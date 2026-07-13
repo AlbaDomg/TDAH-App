@@ -144,23 +144,52 @@ export const stopAlarm = () => {
 };
 
 export const sendNotification = (title, options = {}, soundType = 'chime') => {
+  // Reproducir el sonido correspondiente (una sola vez para la notificación normal)
+  playNotificationSound(soundType);
+
   if (!("Notification" in window)) {
-    // Si no soporta notificaciones, aún así reproducimos el sonido como fallback
-    playNotificationSound(soundType);
     return null;
   }
 
   let notification = null;
   if (Notification.permission === "granted") {
-    notification = new Notification(title, {
-      icon: '/vite.svg', // Icono por defecto
-      badge: '/vite.svg',
-      vibrate: [200, 100, 200],
-      ...options
-    });
+    // Si hay un Service Worker activo, usarlo para enviar la notificación (necesario en móviles Android/iOS)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(title, {
+          icon: '/favicon.png',
+          badge: '/favicon.png',
+          vibrate: [200, 100, 200],
+          ...options
+        });
+      }).catch((err) => {
+        console.warn("Error mostrando notificación vía SW, usando constructor clásico:", err);
+        // Fallback al constructor clásico
+        try {
+          notification = new Notification(title, {
+            icon: '/favicon.png',
+            badge: '/favicon.png',
+            vibrate: [200, 100, 200],
+            ...options
+          });
+        } catch (e) {
+          console.error("Fallo al crear notificación nativa clásica:", e);
+        }
+      });
+    } else {
+      // Fallback si no hay Service Worker (navegadores de PC tradicionales)
+      try {
+        notification = new Notification(title, {
+          icon: '/favicon.png',
+          badge: '/favicon.png',
+          vibrate: [200, 100, 200],
+          ...options
+        });
+      } catch (e) {
+        console.error("Fallo al crear notificación nativa clásica:", e);
+      }
+    }
   }
   
-  // Reproducir el sonido correspondiente (una sola vez para la notificación normal)
-  playNotificationSound(soundType);
   return notification;
 };
