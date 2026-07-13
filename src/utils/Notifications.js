@@ -121,25 +121,32 @@ export const playNotificationSound = (soundType = 'chime') => {
   }
 };
 
-let alarmInterval = null;
+let alarmWorker = null;
 
 export const startAlarm = (soundType = 'chime') => {
-  if (alarmInterval) {
-    clearInterval(alarmInterval);
+  if (alarmWorker) {
+    alarmWorker.postMessage({ command: 'stop' });
+    alarmWorker.terminate();
   }
+  
   // Reproducir inmediatamente
   playNotificationSound(soundType);
   
-  // Repetir cada 4 segundos de forma persistente
-  alarmInterval = setInterval(() => {
-    playNotificationSound(soundType);
-  }, 4000);
+  // Repetir cada 4 segundos de forma persistente usando Web Worker para evadir suspensión
+  import('./workerTimer').then(({ createTimerWorker }) => {
+    alarmWorker = createTimerWorker();
+    alarmWorker.onmessage = () => {
+      playNotificationSound(soundType);
+    };
+    alarmWorker.postMessage({ command: 'start', interval: 4000 });
+  });
 };
 
 export const stopAlarm = () => {
-  if (alarmInterval) {
-    clearInterval(alarmInterval);
-    alarmInterval = null;
+  if (alarmWorker) {
+    alarmWorker.postMessage({ command: 'stop' });
+    alarmWorker.terminate();
+    alarmWorker = null;
   }
 };
 

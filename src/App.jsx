@@ -9,6 +9,7 @@ import { TaskDashboard } from './components/TaskDashboard';
 import { ListsSection } from './components/ListsSection';
 import { triggerReward } from './utils/RewardSystem';
 import { requestNotificationPermission, sendNotification, startAlarm, stopAlarm, playNotificationSound } from './utils/Notifications';
+import { createTimerWorker } from './utils/workerTimer';
 import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag, LogOut, Cloud, RefreshCw, Bell } from 'lucide-react';
 import './App.css';
 import { DopamineStore } from './components/DopamineStore';
@@ -252,8 +253,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Revisar recordatorios cada 15 segundos para mayor precisión (tolerante a suspensión del navegador)
-    const checkSchedules = setInterval(() => {
+    // Revisar recordatorios usando Web Worker para evadir la suspensión de pestañas en segundo plano
+    const worker = createTimerWorker();
+    worker.onmessage = () => {
       const now = new Date();
       let hasUpdates = false;
       const currentTasks = pendingTasksRef.current;
@@ -350,9 +352,14 @@ function App() {
           }
         }
       }
-    }, 15000);
+    };
 
-    return () => clearInterval(checkSchedules);
+    worker.postMessage({ command: 'start', interval: 15000 });
+
+    return () => {
+      worker.postMessage({ command: 'stop' });
+      worker.terminate();
+    };
   }, [setPendingTasks, setActiveTaskId, setCurrentView]);
 
 

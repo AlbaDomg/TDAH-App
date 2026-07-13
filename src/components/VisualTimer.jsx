@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './VisualTimer.css';
 
+import { createTimerWorker } from '../utils/workerTimer';
+
 export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete, onTimeUpdate, onTimerStateChange }) => {
   const totalSeconds = durationMinutes * 60;
   const [timeLeft, setTimeLeft] = useState(() => {
@@ -24,17 +26,24 @@ export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete
   }, [onTimeUpdate]);
 
   useEffect(() => {
-    let interval = null;
+    let worker = null;
     if (isActive && timeLeft > 0) {
-      interval = setInterval(() => {
+      worker = createTimerWorker();
+      worker.onmessage = () => {
         setTimeLeft((prev) => prev - 1);
-      }, 1000);
+      };
+      worker.postMessage({ command: 'start', interval: 1000 });
     } else if (timeLeft === 0 && isActive) {
       setIsActive(false);
       if (onComplete) onComplete();
       if (onTimerStateChange) onTimerStateChange(false);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (worker) {
+        worker.postMessage({ command: 'stop' });
+        worker.terminate();
+      }
+    };
   }, [isActive, timeLeft, onComplete]);
 
   const percentage = (timeLeft / totalSeconds) * 100;
