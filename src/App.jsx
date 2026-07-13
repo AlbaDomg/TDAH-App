@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { TaskCard } from './components/TaskCard';
 import { ParalysisMode } from './components/ParalysisMode';
@@ -32,6 +32,12 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // Mantener referencia de tareas pendientes para evitar reiniciar el intervalo de recordatorios
+  const pendingTasksRef = useRef(pendingTasks);
+  useEffect(() => {
+    pendingTasksRef.current = pendingTasks;
+  }, [pendingTasks]);
 
   // 1. Suscribirse al estado de autenticación
   useEffect(() => {
@@ -174,32 +180,51 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Revisar recordatorios cada minuto
+    // Revisar recordatorios cada 15 segundos para mayor precisión (tolerante a suspensión del navegador)
     const checkSchedules = setInterval(() => {
       const now = new Date();
-      pendingTasks.forEach(task => {
+      let hasUpdates = false;
+      const currentTasks = pendingTasksRef.current;
+      
+      const updatedTasks = currentTasks.map(task => {
         if (task.scheduledTime && !task.completed) {
           const scheduledDate = new Date(task.scheduledTime);
           const diffInMinutes = (scheduledDate - now) / (1000 * 60);
+          let notifiedExact = task.notifiedExact || false;
+          let notifiedEarly = task.notifiedEarly || false;
+          let updatedTask = null;
 
-          // Si falta entre 0 y 1 minuto (hora exacta)
-          if (diffInMinutes > 0 && diffInMinutes <= 1) {
+          // 1. Recordatorio a la hora exacta (si ya ha pasado la hora y no se ha enviado aún)
+          if (now >= scheduledDate && !notifiedExact) {
             sendNotification("¡Es hora de tu tarea programada!", {
               body: `Tu tarea "${task.title}" toca ahora. ¡A por ella!`
             });
+            notifiedExact = true;
+            updatedTask = { ...task, notifiedExact };
+            hasUpdates = true;
           }
-          // Recordatorio anticipado (15 minutos antes)
-          else if (diffInMinutes > 14 && diffInMinutes <= 15) {
+          // 2. Recordatorio anticipado (si faltan 15 minutos o menos y no se ha enviado aún)
+          else if (diffInMinutes > 0 && diffInMinutes <= 15 && !notifiedEarly) {
             sendNotification("Recordatorio anticipado", {
               body: `Faltan 15 minutos para tu tarea: "${task.title}".`
             });
+            notifiedEarly = true;
+            updatedTask = { ...task, notifiedEarly };
+            hasUpdates = true;
           }
+
+          return updatedTask || task;
         }
+        return task;
       });
-    }, 60000);
+
+      if (hasUpdates) {
+        setPendingTasks(updatedTasks);
+      }
+    }, 15000);
 
     return () => clearInterval(checkSchedules);
-  }, [pendingTasks]);
+  }, [setPendingTasks]);
 
 
   const currentTask = pendingTasks.find(t => t.id === activeTaskId) || null;
