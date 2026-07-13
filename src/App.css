@@ -338,6 +338,42 @@
 }
 
 @media (max-width: 480px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+  
+  .header-left {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .header-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  .user-profile-header {
+    flex: 1.2;
+    justify-content: space-between;
+    padding: 8px 12px;
+  }
+  
+  .paralysis-trigger-btn {
+    flex: 0.8;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
   .permission-banner {
     flex-direction: column;
     align-items: stretch;

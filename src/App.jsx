@@ -58,15 +58,6 @@ function App() {
     playNotificationSound(activeSound); // Sonido de prueba para desbloquear audio del móvil
   };
 
-  useEffect(() => {
-    const handleWindowFocus = () => {
-      // Detener alarma sonora persistente cuando el usuario entra en la pestaña
-      stopAlarm();
-    };
-    window.addEventListener('focus', handleWindowFocus);
-    return () => window.removeEventListener('focus', handleWindowFocus);
-  }, []);
-
   // 1. Suscribirse al estado de autenticación
   useEffect(() => {
     const unsubscribe = subscribeAuth(async (user) => {
