@@ -22,9 +22,11 @@ export const DopamineStore = ({
     { id: 'default', name: 'Arena Cálida', cost: 0, description: 'Fondo beige clásico, relajante y agradable.', class: '' },
     { id: 'slate', name: 'Gris Minimalista', cost: 0, description: 'Estilo monocromático para evitar distracciones.', class: 'theme-slate' },
     { id: 'lavender', name: 'Lavanda Relajante', cost: 100, description: 'Violetas suaves para momentos de estrés.', class: 'theme-lavender' },
-    { id: 'sunset', name: 'Atardecer Acogedor', cost: 150, description: 'Corales y naranjas cálidos inspiradores.', class: 'theme-sunset' },
+    { id: 'sunset', name: 'Océano Calmo', cost: 150, description: 'Tonos azules clásicos y relajantes como el océano.', class: 'theme-sunset' },
     { id: 'forest', name: 'Bosque Esmeralda', cost: 200, description: 'Verdes musgo centrados en la naturaleza.', class: 'theme-forest' },
-    { id: 'cyberpunk', name: 'Cyberpunk Neón', cost: 250, description: 'Modo oscuro con colores de alto contraste.', class: 'theme-cyberpunk' }
+    { id: 'sakura', name: 'Flor de Cerezo', cost: 250, description: 'Rosas pasteles y detalles en oro rosa para inspirar calma.', class: 'theme-sakura' },
+    { id: 'cyberpunk', name: 'Cyberpunk Neón', cost: 300, description: 'Modo oscuro con colores de alto contraste.', class: 'theme-cyberpunk' },
+    { id: 'stars', name: 'Noche Estrellada', cost: 350, description: 'Modo oscuro relajante con tonos azul noche y oro estelar.', class: 'theme-stars' }
   ];
 
   // Purchase theme

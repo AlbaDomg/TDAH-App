@@ -70,6 +70,9 @@ export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete
 
   return (
     <div className="visual-timer-container">
+      <div className="timer-display">
+        {formatTime(timeLeft)}
+      </div>
       <div className="timer-bar-bg">
         <div 
           className="timer-bar-fill" 

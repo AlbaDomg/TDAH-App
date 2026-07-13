@@ -180,9 +180,9 @@
 .lavender .dot-primary { background-color: #8F79E2; }
 .lavender .dot-accent { background-color: #C3B8E6; }
 
-.sunset .dot-bg { background-color: #FAF5F0; }
-.sunset .dot-primary { background-color: #E06A55; }
-.sunset .dot-accent { background-color: #F3B08C; }
+.sunset .dot-bg { background-color: #F0F4F8; }
+.sunset .dot-primary { background-color: #2B6CB0; }
+.sunset .dot-accent { background-color: #63B3ED; }
 
 .forest .dot-bg { background-color: #F3F6F3; }
 .forest .dot-primary { background-color: #4A7C59; }
@@ -191,6 +191,14 @@
 .cyberpunk .dot-bg { background-color: #0F0C1B; }
 .cyberpunk .dot-primary { background-color: #FF2A7A; }
 .cyberpunk .dot-accent { background-color: #00F0FF; }
+
+.sakura .dot-bg { background-color: #FFF5F6; }
+.sakura .dot-primary { background-color: #D38E96; }
+.sakura .dot-accent { background-color: #FFB3BA; }
+
+.stars .dot-bg { background-color: #0B0E14; }
+.stars .dot-primary { background-color: #F4D068; }
+.stars .dot-accent { background-color: #90CDF4; }
 
 .active-item {
   border-color: var(--color-accent-terracotta);

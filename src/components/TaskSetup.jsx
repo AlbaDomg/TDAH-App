@@ -63,6 +63,8 @@ export const TaskSetup = ({ onAddTask }) => {
                 <option value={25}>25 min (Estándar)</option>
                 <option value={40}>40 min (Enfoque)</option>
                 <option value={60}>60 min (Foco profundo)</option>
+                <option value={90}>90 min (1.5 horas)</option>
+                <option value={120}>120 min (2 horas)</option>
               </select>
             </div>
           </div>

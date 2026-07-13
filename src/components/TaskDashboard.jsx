@@ -122,6 +122,9 @@ export const TaskDashboard = ({
                 <option value={15}>15 min (Rápido)</option>
                 <option value={25}>25 min (Estándar)</option>
                 <option value={45}>45 min (Profundo)</option>
+                <option value={60}>60 min (1 hora)</option>
+                <option value={90}>90 min (1.5 horas)</option>
+                <option value={120}>120 min (2 horas)</option>
               </select>
             </div>
 
@@ -193,6 +196,8 @@ export const TaskDashboard = ({
                           <option value={25}>25 min</option>
                           <option value={40}>40 min</option>
                           <option value={60}>60 min</option>
+                          <option value={90}>90 min</option>
+                          <option value={120}>120 min</option>
                         </select>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--color-bg-secondary)', padding: '6px 12px', borderRadius: 'var(--radius-sm)', flex: 1.5, minWidth: '180px' }}>

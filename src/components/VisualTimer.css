@@ -46,3 +46,13 @@
 .timer-btn-outline:hover {
   background-color: var(--color-bg-secondary);
 }
+
+.timer-display {
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--color-text-main);
+  letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}

@@ -153,3 +153,9 @@
   font-size: 0.85rem;
   color: var(--color-accent-peach);
 }
+
+@media (max-width: 480px) {
+  .task-setup {
+    padding: 20px 16px;
+  }
+}

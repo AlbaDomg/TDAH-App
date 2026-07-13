@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { TaskCard } from './components/TaskCard';
 import { ParalysisMode } from './components/ParalysisMode';
@@ -9,9 +9,11 @@ import { TaskDashboard } from './components/TaskDashboard';
 import { ListsSection } from './components/ListsSection';
 import { triggerReward } from './utils/RewardSystem';
 import { requestNotificationPermission, sendNotification } from './utils/Notifications';
-import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag } from 'lucide-react';
+import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag, LogOut, Cloud, RefreshCw } from 'lucide-react';
 import './App.css';
 import { DopamineStore } from './components/DopamineStore';
+import { subscribeAuth, logOut, getUserData, saveUserData } from './firebase';
+import { Auth } from './components/Auth';
 
 function App() {
   const [dopaminePoints, setDopaminePoints] = useLocalStorage('adhd_points', 0);
@@ -27,9 +29,132 @@ function App() {
   const [unlockedThemes, setUnlockedThemes] = useLocalStorage('adhd_unlocked_themes', ['default', 'slate']);
   const [customRewards, setCustomRewards] = useLocalStorage('adhd_custom_rewards', []);
 
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // 1. Suscribirse al estado de autenticación
+  useEffect(() => {
+    const unsubscribe = subscribeAuth(async (user) => {
+      setCurrentUser(user);
+      if (user) {
+        // Cargar datos del usuario desde la nube
+        try {
+          const docSnap = await getUserData(user.uid);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.dopaminePoints !== undefined) setDopaminePoints(data.dopaminePoints);
+            if (data.completedTasks !== undefined) setCompletedTasks(data.completedTasks);
+            if (data.pendingTasks !== undefined) setPendingTasks(data.pendingTasks);
+            if (data.activeTaskId !== undefined) setActiveTaskId(data.activeTaskId);
+            if (data.lists !== undefined) setLists(data.lists);
+            if (data.activeTheme !== undefined) setActiveTheme(data.activeTheme);
+            if (data.unlockedThemes !== undefined) setUnlockedThemes(data.unlockedThemes);
+            if (data.customRewards !== undefined) setCustomRewards(data.customRewards);
+            if (data.currentView !== undefined) setCurrentView(data.currentView);
+          }
+        } catch (error) {
+          console.error("Error al cargar datos de la nube:", error);
+        }
+      }
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Sincronizar datos automáticamente (con debounce de 2 segundos)
+  useEffect(() => {
+    if (!currentUser || authLoading) return;
+
+    const dataToSync = {
+      dopaminePoints,
+      completedTasks,
+      pendingTasks,
+      activeTaskId,
+      lists,
+      activeTheme,
+      unlockedThemes,
+      customRewards,
+      currentView,
+      lastSynced: new Date().toISOString()
+    };
+
+    const timer = setTimeout(async () => {
+      try {
+        setIsSyncing(true);
+        await saveUserData(currentUser.uid, dataToSync);
+      } catch (error) {
+        console.error("Error al sincronizar con la nube:", error);
+      } finally {
+        setIsSyncing(false);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [
+    dopaminePoints,
+    completedTasks,
+    pendingTasks,
+    activeTaskId,
+    lists,
+    activeTheme,
+    unlockedThemes,
+    customRewards,
+    currentView,
+    currentUser,
+    authLoading
+  ]);
+
+  const handleAuthSuccess = async (user, migrate) => {
+    setCurrentUser(user);
+    if (migrate) {
+      // Migrar datos de invitado a la nube inmediatamente
+      const dataToSync = {
+        dopaminePoints,
+        completedTasks,
+        pendingTasks,
+        activeTaskId,
+        lists,
+        activeTheme,
+        unlockedThemes,
+        customRewards,
+        currentView,
+        lastSynced: new Date().toISOString()
+      };
+      try {
+        setIsSyncing(true);
+        await saveUserData(user.uid, dataToSync);
+      } catch (error) {
+        console.error("Error migrando datos:", error);
+      } finally {
+        setIsSyncing(false);
+      }
+    }
+  };
+
+  const handleLogout = async () => {
+    if (window.confirm("¿Seguro que quieres cerrar sesión?")) {
+      try {
+        await logOut();
+        // Limpiar estados locales para la siguiente sesión
+        setDopaminePoints(0);
+        setCompletedTasks([]);
+        setPendingTasks([]);
+        setActiveTaskId(null);
+        setLists([]);
+        setActiveTheme('default');
+        setUnlockedThemes(['default', 'slate']);
+        setCustomRewards([]);
+        setCurrentView('setup');
+      } catch (error) {
+        console.error("Error cerrando sesión:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     // Aplicar tema de color activo al body
-    const themeClasses = ['theme-lavender', 'theme-forest', 'theme-sunset', 'theme-cyberpunk', 'theme-slate'];
+    const themeClasses = ['theme-lavender', 'theme-forest', 'theme-sunset', 'theme-cyberpunk', 'theme-slate', 'theme-sakura', 'theme-stars'];
     themeClasses.forEach(cls => document.body.classList.remove(cls));
     if (activeTheme && activeTheme !== 'default') {
       document.body.classList.add(`theme-${activeTheme}`);
@@ -176,24 +301,71 @@ function App() {
     );
   };
 
+  if (authLoading) {
+    return (
+      <div className="app-loading-screen">
+        <RefreshCw className="spinner spin" size={48} />
+        <p>Cargando tu espacio...</p>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    const guestProgress = {
+      dopaminePoints,
+      completedTasks,
+      pendingTasks,
+      lists,
+      activeTheme,
+      unlockedThemes,
+      customRewards
+    };
+    return (
+      <Auth 
+        onAuthSuccess={handleAuthSuccess} 
+        guestProgress={guestProgress}
+      />
+    );
+  }
+
   return (
     <div className="app-container">
       <header className="app-header">
-        <div className="dopamine-counter">
-          <Star className="star-icon" fill="var(--color-accent-peach)" size={28} />
-          <span className="points">{dopaminePoints} pts</span>
+        <div className="header-left">
+          <div className="dopamine-counter">
+            <Star className="star-icon" fill="var(--color-accent-peach)" size={28} />
+            <span className="points">{dopaminePoints} pts</span>
+          </div>
+          <div className="sync-status">
+            {isSyncing ? (
+              <RefreshCw className="sync-icon spin" size={16} title="Sincronizando con la nube..." />
+            ) : (
+              <Cloud className="sync-icon synced" size={16} title="Progreso guardado en la nube" />
+            )}
+          </div>
         </div>
         
-        {currentView !== 'paralysis' && (
-          <button 
-            className="paralysis-trigger-btn"
-            onClick={() => setCurrentView('paralysis')}
-            title="Me siento abrumado"
-          >
-            <ShieldAlert size={20} />
-            Socorro
-          </button>
-        )}
+        <div className="header-right">
+          <div className="user-profile-header">
+            <span className="user-email" title={currentUser.email}>
+              {currentUser.email.split('@')[0]}
+            </span>
+            <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión">
+              <LogOut size={16} />
+            </button>
+          </div>
+
+          {currentView !== 'paralysis' && (
+            <button 
+              className="paralysis-trigger-btn"
+              onClick={() => setCurrentView('paralysis')}
+              title="Me siento abrumado"
+            >
+              <ShieldAlert size={20} />
+              Socorro
+            </button>
+          )}
+        </div>
       </header>
 
       <main className="main-content">

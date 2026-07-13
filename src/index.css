@@ -165,17 +165,17 @@ button.success:hover {
 }
 
 .theme-sunset {
-  --color-bg: #FAF5F0;
-  --color-bg-secondary: #F4EAE1;
-  --color-text-main: #4C3B32;
-  --color-text-muted: #8E7568;
-  --color-accent-terracotta: #E06A55;
-  --color-accent-peach: #F3B08C;
-  --color-success-olive: #8EA483;
-  --color-danger-soft: #E67E7E;
+  --color-bg: #F0F4F8;
+  --color-bg-secondary: #DDE5ED;
+  --color-text-main: #1C2D42;
+  --color-text-muted: #546E8A;
+  --color-accent-terracotta: #2B6CB0;
+  --color-accent-peach: #63B3ED;
+  --color-success-olive: #48BB78;
+  --color-danger-soft: #D98C8C;
   --color-card-bg: #FFFFFF;
-  --shadow-soft: 0 8px 24px rgba(76, 59, 50, 0.05);
-  --shadow-hover: 0 12px 32px rgba(76, 59, 50, 0.08);
+  --shadow-soft: 0 8px 24px rgba(28, 45, 66, 0.05);
+  --shadow-hover: 0 12px 32px rgba(28, 45, 66, 0.08);
 }
 
 .theme-cyberpunk {
@@ -204,5 +204,33 @@ button.success:hover {
   --color-card-bg: #FFFFFF;
   --shadow-soft: 0 8px 24px rgba(0,0,0,0.03);
   --shadow-hover: 0 12px 32px rgba(0,0,0,0.05);
+}
+
+.theme-sakura {
+  --color-bg: #FFF5F6;
+  --color-bg-secondary: #FFE3E5;
+  --color-text-main: #4A3538;
+  --color-text-muted: #8F7275;
+  --color-accent-terracotta: #D38E96;
+  --color-accent-peach: #FFB3BA;
+  --color-success-olive: #98B0A0;
+  --color-danger-soft: #E6A3A3;
+  --color-card-bg: #FFFFFF;
+  --shadow-soft: 0 8px 24px rgba(74, 53, 56, 0.04);
+  --shadow-hover: 0 12px 32px rgba(74, 53, 56, 0.06);
+}
+
+.theme-stars {
+  --color-bg: #0B0E14;
+  --color-bg-secondary: #161C26;
+  --color-text-main: #E2E8F0;
+  --color-text-muted: #7E8B9B;
+  --color-accent-terracotta: #F4D068;
+  --color-accent-peach: #90CDF4;
+  --color-success-olive: #48BB78;
+  --color-danger-soft: #FEB2B2;
+  --color-card-bg: #1A202C;
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
