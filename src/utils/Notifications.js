@@ -121,13 +121,38 @@ export const playNotificationSound = (soundType = 'chime') => {
   }
 };
 
+let alarmInterval = null;
+
+export const startAlarm = (soundType = 'chime') => {
+  if (alarmInterval) {
+    clearInterval(alarmInterval);
+  }
+  // Reproducir inmediatamente
+  playNotificationSound(soundType);
+  
+  // Repetir cada 4 segundos de forma persistente
+  alarmInterval = setInterval(() => {
+    playNotificationSound(soundType);
+  }, 4000);
+};
+
+export const stopAlarm = () => {
+  if (alarmInterval) {
+    clearInterval(alarmInterval);
+    alarmInterval = null;
+  }
+};
+
 export const sendNotification = (title, options = {}, soundType = 'chime') => {
   if (!("Notification" in window)) {
-    return;
+    // Si no soporta notificaciones, aún así reproducimos el sonido como fallback
+    playNotificationSound(soundType);
+    return null;
   }
 
+  let notification = null;
   if (Notification.permission === "granted") {
-    new Notification(title, {
+    notification = new Notification(title, {
       icon: '/vite.svg', // Icono por defecto
       badge: '/vite.svg',
       vibrate: [200, 100, 200],
@@ -135,7 +160,7 @@ export const sendNotification = (title, options = {}, soundType = 'chime') => {
     });
   }
   
-  // Siempre reproducimos el sonido en el navegador del usuario si la pestaña está abierta,
-  // como un recordatorio local inmediato muy útil
+  // Reproducir el sonido correspondiente (una sola vez para la notificación normal)
   playNotificationSound(soundType);
+  return notification;
 };

@@ -470,6 +470,35 @@
 }
 
 @media (max-width: 480px) {
+  .store-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 16px;
+  }
+  .store-tab {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+    justify-content: center;
+    border-bottom: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-secondary);
+    gap: 4px;
+  }
+  .store-tab svg {
+    width: 16px;
+    height: 16px;
+  }
+  .store-tab.active {
+    background-color: var(--color-accent-terracotta);
+    color: white;
+    border-bottom-color: var(--color-accent-terracotta);
+  }
+  .store-grid {
+    grid-template-columns: 1fr;
+  }
   .sound-card {
     flex-direction: column;
     align-items: flex-start;

@@ -105,7 +105,7 @@ export const DopamineStore = ({
           onClick={() => setActiveTab('custom')}
         >
           <Gift size={20} />
-          <span>Auto-Recompensas</span>
+          <span>Recompensas</span>
         </button>
         <button 
           className={`store-tab ${activeTab === 'alerts' ? 'active' : ''}`}

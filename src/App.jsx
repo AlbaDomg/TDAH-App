@@ -8,8 +8,8 @@ import { CalmingGame } from './components/CalmingGame';
 import { TaskDashboard } from './components/TaskDashboard';
 import { ListsSection } from './components/ListsSection';
 import { triggerReward } from './utils/RewardSystem';
-import { requestNotificationPermission, sendNotification } from './utils/Notifications';
-import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag, LogOut, Cloud, RefreshCw } from 'lucide-react';
+import { requestNotificationPermission, sendNotification, startAlarm, stopAlarm, playNotificationSound } from './utils/Notifications';
+import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag, LogOut, Cloud, RefreshCw, Bell } from 'lucide-react';
 import './App.css';
 import { DopamineStore } from './components/DopamineStore';
 import { subscribeAuth, logOut, getUserData, saveUserData } from './firebase';
@@ -30,6 +30,12 @@ function App() {
   const [customRewards, setCustomRewards] = useLocalStorage('adhd_custom_rewards', []);
   const [activeSound, setActiveSound] = useLocalStorage('adhd_active_sound', 'chime');
 
+  // Estados de notificaciones y alarmas
+  const [notifPermission, setNotifPermission] = useState(
+    typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'denied'
+  );
+  const [activeAlarmTask, setActiveAlarmTask] = useState(null);
+
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -45,6 +51,21 @@ function App() {
   useEffect(() => {
     activeSoundRef.current = activeSound;
   }, [activeSound]);
+
+  const handleRequestNotifPermission = async () => {
+    const granted = await requestNotificationPermission();
+    setNotifPermission(granted ? 'granted' : 'denied');
+    playNotificationSound(activeSound); // Sonido de prueba para desbloquear audio del móvil
+  };
+
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      // Detener alarma sonora persistente cuando el usuario entra en la pestaña
+      stopAlarm();
+    };
+    window.addEventListener('focus', handleWindowFocus);
+    return () => window.removeEventListener('focus', handleWindowFocus);
+  }, []);
 
   // 1. Suscribirse al estado de autenticación
   useEffect(() => {
@@ -208,18 +229,44 @@ function App() {
 
           // 1. Recordatorio a la hora exacta (si ya ha pasado la hora y no se ha enviado aún)
           if (now >= scheduledDate && !notifiedExact) {
-            sendNotification("¡Es hora de tu tarea programada!", {
-              body: `Tu tarea "${task.title}" toca ahora. ¡A por ella!`
+            // Empezar alarma en bucle continuo y mostrar modal
+            startAlarm(activeSoundRef.current);
+            setActiveAlarmTask(task);
+
+            const notif = sendNotification("¡Es hora de tu tarea programada!", {
+              body: `Tu tarea "${task.title}" toca ahora. ¡Haz clic para empezar!`,
+              requireInteraction: true // mantener visible en pantalla
             }, activeSoundRef.current);
+
+            if (notif) {
+              notif.onclick = () => {
+                window.focus();
+                stopAlarm();
+                setActiveAlarmTask(null);
+                setActiveTaskId(task.id);
+                setCurrentView('focus');
+              };
+            }
+
             notifiedExact = true;
             updatedTask = { ...task, notifiedExact };
             hasUpdates = true;
           }
           // 2. Recordatorio anticipado (si faltan 15 minutos o menos y no se ha enviado aún)
           else if (diffInMinutes > 0 && diffInMinutes <= 15 && !notifiedEarly) {
-            sendNotification("Recordatorio anticipado", {
+            // Notificación normal simple
+            const notif = sendNotification("Recordatorio anticipado", {
               body: `Faltan 15 minutos para tu tarea: "${task.title}".`
             }, activeSoundRef.current);
+
+            if (notif) {
+              notif.onclick = () => {
+                window.focus();
+                setActiveTaskId(task.id);
+                setCurrentView('focus');
+              };
+            }
+
             notifiedEarly = true;
             updatedTask = { ...task, notifiedEarly };
             hasUpdates = true;
@@ -236,7 +283,7 @@ function App() {
     }, 15000);
 
     return () => clearInterval(checkSchedules);
-  }, [setPendingTasks]);
+  }, [setPendingTasks, setActiveTaskId, setCurrentView]);
 
 
   const currentTask = pendingTasks.find(t => t.id === activeTaskId) || null;
@@ -367,6 +414,18 @@ function App() {
 
   return (
     <div className="app-container">
+      {notifPermission !== 'granted' && (
+        <div className="permission-banner fade-in">
+          <div className="permission-banner-content">
+            <Bell size={20} className="bell-pulse" />
+            <span>Activa las notificaciones y alarmas de sonido para no olvidar tus tareas.</span>
+          </div>
+          <button onClick={handleRequestNotifPermission} className="permission-btn btn-sm">
+            Activar Alertas
+          </button>
+        </div>
+      )}
+
       <header className="app-header">
         <div className="header-left">
           <div className="dopamine-counter">
@@ -522,6 +581,33 @@ function App() {
           <span>Tienda</span>
         </button>
       </nav>
+
+      {activeAlarmTask && (
+        <div className="alarm-overlay">
+          <div className="alarm-card scale-up">
+            <div className="alarm-card-icon-container">
+              <Bell className="alarm-bell-pulse" size={48} />
+            </div>
+            <h2>🔔 ¡Es hora de empezar!</h2>
+            <p>Tu tarea programada toca ahora:</p>
+            <div className="alarm-task-box">
+              <h3>{activeAlarmTask.title}</h3>
+              {activeAlarmTask.duration && <span>⏱️ {activeAlarmTask.duration} minutos</span>}
+            </div>
+            <button 
+              className="primary alarm-stop-btn"
+              onClick={() => {
+                stopAlarm();
+                setActiveAlarmTask(null);
+                setActiveTaskId(activeAlarmTask.id);
+                setCurrentView('focus');
+              }}
+            >
+              Detener Alarma y Empezar Tarea
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
