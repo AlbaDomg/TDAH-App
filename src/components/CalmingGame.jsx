@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Wind, CircleDashed, Eye, ArrowLeft, Keyboard } from 'lucide-react';
+import { Wind, CircleDashed, Eye, ArrowLeft } from 'lucide-react';
 import './CalmingGame.css';
-import { SensoryKeyboard } from './SensoryKeyboard';
 
 // 1. Juego de Respiración (El que ya teníamos)
 const BreathingGame = () => {
@@ -133,12 +132,6 @@ export const CalmingGame = () => {
   if (activeGame === 'breathing') return <><BackButton onBack={() => setActiveGame(null)} /><BreathingGame /></>;
   if (activeGame === 'bubbles') return <><BackButton onBack={() => setActiveGame(null)} /><BubbleWrapGame /></>;
   if (activeGame === 'grounding') return <><BackButton onBack={() => setActiveGame(null)} /><GroundingGame /></>;
-  if (activeGame === 'sensory-keyboard') return (
-    <>
-      <BackButton onBack={() => setActiveGame(null)} />
-      <SensoryKeyboard />
-    </>
-  );
 
   return (
     <div className="calming-game fade-in">
@@ -166,11 +159,6 @@ export const CalmingGame = () => {
           <p>Conecta con tus sentidos para volver al momento presente.</p>
         </button>
 
-        <button className="game-option-card" onClick={() => setActiveGame('sensory-keyboard')}>
-          <Keyboard size={40} className="game-icon" style={{color: 'var(--color-accent-peach)'}}/>
-          <h3>Teclado Sensorial</h3>
-          <p>Escribe y relájate con clics ASMR interactivos y ondas de color.</p>
-        </button>
       </div>
     </div>
   );
