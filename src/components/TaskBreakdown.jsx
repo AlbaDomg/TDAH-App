@@ -23,61 +23,80 @@ export const TaskBreakdown = ({ taskName, onStepComplete }) => {
     setApiError(null);
 
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${savedKey}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Eres un asistente experto en TDAH. Divide la tarea "${taskName}" en pasos secuenciales extremadamente sencillos, concretos, visuales y libres de abrumación para una persona con TDAH.
+      const urlsToTry = [
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${savedKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${savedKey}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${savedKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${savedKey}`
+    ];
+
+    let success = false;
+    let lastError = null;
+
+    for (const url of urlsToTry) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `Eres un asistente experto en TDAH. Divide la tarea "${taskName}" en pasos secuenciales extremadamente sencillos, concretos, visuales y libres de abrumación para una persona con TDAH.
 Requisitos:
 - Genera entre 3 y 6 pasos como máximo.
 - Haz que el primer paso sea prepararse o quitar distracciones (ej. ponerse música, preparar agua, despejar mesa).
 - Devuelve la respuesta en formato JSON estrictamente como un array de objetos con este formato: [{"id": 1, "text": "..."}]. No uses bloques de código Markdown ni explicaciones adicionales, devuelve SOLO el array JSON.`
-            }]
-          }],
-          generationConfig: {
-            responseMimeType: "application/json"
-          }
-        })
-      });
+              }]
+            }],
+            generationConfig: {
+              responseMimeType: "application/json"
+            }
+          })
+        });
 
-      if (!response.ok) {
-        let errorMsg = `Código de error HTTP ${response.status}`;
-        try {
-          const errorJson = await response.json();
-          if (errorJson?.error?.message) {
-            errorMsg = errorJson.error.message;
+        if (!response.ok) {
+          let errorMsg = `Código de error HTTP ${response.status}`;
+          try {
+            const errorJson = await response.json();
+            if (errorJson?.error?.message) {
+              errorMsg = errorJson.error.message;
+            }
+          } catch (e) {
+            console.error("Error parsing error response:", e);
           }
-        } catch (e) {
-          console.error("Error parsing error response:", e);
+          throw new Error(errorMsg);
         }
-        throw new Error(errorMsg);
-      }
 
-      const data = await response.json();
-      const textResponse = data.candidates[0].content.parts[0].text;
-      
-      let parsedSteps;
-      try {
-        parsedSteps = JSON.parse(textResponse.trim());
-      } catch {
-        // Intenta limpiar si la respuesta contiene markdown
-        const cleanText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-        parsedSteps = JSON.parse(cleanText);
-      }
+        const data = await response.json();
+        const textResponse = data.candidates[0].content.parts[0].text;
+        
+        let parsedSteps;
+        try {
+          parsedSteps = JSON.parse(textResponse.trim());
+        } catch {
+          // Intenta limpiar si la respuesta contiene markdown
+          const cleanText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+          parsedSteps = JSON.parse(cleanText);
+        }
 
-      if (Array.isArray(parsedSteps)) {
-        setSteps(parsedSteps.map(s => ({ ...s, completed: false })));
-      } else {
-        throw new Error("El formato devuelto no es un array.");
+        if (Array.isArray(parsedSteps)) {
+          setSteps(parsedSteps.map(s => ({ ...s, completed: false })));
+          success = true;
+          break;
+        } else {
+          throw new Error("El formato devuelto no es un array.");
+        }
+      } catch (err) {
+        console.warn(`Failed fetch on ${url}:`, err.message);
+        lastError = err;
       }
-    } catch (err) {
-      console.error("Gemini API error:", err);
-      setApiError(`Error al conectar con la IA: ${err.message}. Por favor, verifica tu API Key.`);
+    }
+
+    if (!success) {
+      console.error("All Gemini API attempts failed:", lastError);
+      setApiError(`Error al conectar con la IA: ${lastError?.message || 'Error desconocido'}. Por favor, verifica tu API Key.`);
       
       // Fallback simple por si falla para que el usuario no se quede bloqueado
       setSteps([
@@ -86,9 +105,10 @@ Requisitos:
         { id: 3, text: 'Paso 2: Continuar a tu propio ritmo', completed: false },
         { id: 4, text: 'Completar y celebrar', completed: false }
       ]);
-    } finally {
-      setIsFragmenting(false);
     }
+  } finally {
+    setIsFragmenting(false);
+  }
   }, [taskName]);
 
   const handleManualSetup = () => {
