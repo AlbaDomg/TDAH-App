@@ -197,19 +197,6 @@
   background-color: var(--color-bg-secondary);
 }
 
-/* Sound Cards icon styling */
-.sound-card-icon {
-  background-color: var(--color-card-bg);
-  color: var(--color-accent-terracotta);
-  padding: 8px;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-soft);
-}
 
 /* Custom Rewards tab styling */
 .custom-rewards-section {

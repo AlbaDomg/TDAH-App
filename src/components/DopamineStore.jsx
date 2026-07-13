@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Palette, Volume2, Gift, Plus, Trash, Check, Lock } from 'lucide-react';
+import { Sparkles, Palette, Gift, Plus, Trash, Check, Lock } from 'lucide-react';
 import './DopamineStore.css';
 
 export const DopamineStore = ({
@@ -9,15 +9,11 @@ export const DopamineStore = ({
   setActiveTheme,
   unlockedThemes = ['default', 'slate'],
   setUnlockedThemes,
-  unlockedSoundpacks = ['mechanical'],
-  setUnlockedSoundpacks,
-  currentSoundpack,
-  setCurrentSoundpack,
   customRewards = [],
   setCustomRewards,
   triggerConfetti
 }) => {
-  const [activeTab, setActiveTab] = useState('themes'); // 'themes', 'sounds', 'custom'
+  const [activeTab, setActiveTab] = useState('themes'); // 'themes', 'custom'
   const [rewardTitle, setRewardTitle] = useState('');
   const [rewardCost, setRewardCost] = useState(100);
 
@@ -31,14 +27,6 @@ export const DopamineStore = ({
     { id: 'cyberpunk', name: 'Cyberpunk Neón', cost: 250, description: 'Modo oscuro con colores de alto contraste.', class: 'theme-cyberpunk' }
   ];
 
-  // Soundpacks List
-  const soundpacks = [
-    { id: 'mechanical', name: 'Teclado Mecánico', cost: 0, description: 'Clics mecánicos nítidos retro.' },
-    { id: 'bubbles', name: 'Burbujas Pop', cost: 150, description: 'Sonido seco y agudo de burbuja.' },
-    { id: 'wood', name: 'Bloques de Madera', cost: 150, description: 'Golpes de madera resonantes y secos.' },
-    { id: 'rain', name: 'Gotas de Lluvia', cost: 200, description: 'Tonos acuáticos melódicos fluidos.' }
-  ];
-
   // Purchase theme
   const handleBuyTheme = (theme) => {
     if (dopaminePoints >= theme.cost) {
@@ -49,19 +37,6 @@ export const DopamineStore = ({
       alert(`¡Has desbloqueado el tema "${theme.name}"!`);
     } else {
       alert("No tienes suficientes puntos de dopamina. ¡Completa más tareas!");
-    }
-  };
-
-  // Purchase soundpack
-  const handleBuySoundpack = (pack) => {
-    if (dopaminePoints >= pack.cost) {
-      setDopaminePoints(prev => prev - pack.cost);
-      setUnlockedSoundpacks([...unlockedSoundpacks, pack.id]);
-      setCurrentSoundpack(pack.id);
-      if (triggerConfetti) triggerConfetti();
-      alert(`¡Has desbloqueado el sonido "${pack.name}"!`);
-    } else {
-      alert("No tienes suficientes puntos de dopamina. ¡Sigue adelante!");
     }
   };
 
@@ -114,13 +89,6 @@ export const DopamineStore = ({
           <span>Temas</span>
         </button>
         <button 
-          className={`store-tab ${activeTab === 'sounds' ? 'active' : ''}`}
-          onClick={() => setActiveTab('sounds')}
-        >
-          <Volume2 size={20} />
-          <span>Sonidos</span>
-        </button>
-        <button 
           className={`store-tab ${activeTab === 'custom' ? 'active' : ''}`}
           onClick={() => setActiveTab('custom')}
         >
@@ -167,50 +135,6 @@ export const DopamineStore = ({
                         disabled={!canAfford}
                       >
                         <Lock size={14} /> {theme.cost} pts
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* SOUNDS TAB */}
-        {activeTab === 'sounds' && (
-          <div className="store-grid">
-            {soundpacks.map(pack => {
-              const isUnlocked = unlockedSoundpacks.includes(pack.id);
-              const isActive = currentSoundpack === pack.id;
-              const canAfford = dopaminePoints >= pack.cost;
-
-              return (
-                <div key={pack.id} className={`store-card sound-card ${isActive ? 'active-item' : ''}`}>
-                  <div className="sound-card-icon">
-                    <Volume2 size={24} />
-                  </div>
-                  <h3>{pack.name}</h3>
-                  <p>{pack.description}</p>
-                  
-                  <div className="card-actions">
-                    {isUnlocked ? (
-                      isActive ? (
-                        <span className="badge active-badge"><Check size={16} /> Activo</span>
-                      ) : (
-                        <button 
-                          className="secondary btn-sm"
-                          onClick={() => setCurrentSoundpack(pack.id)}
-                        >
-                          Activar
-                        </button>
-                      )
-                    ) : (
-                      <button 
-                        className={`primary btn-sm ${!canAfford ? 'disabled-btn' : ''}`}
-                        onClick={() => handleBuySoundpack(pack)}
-                        disabled={!canAfford}
-                      >
-                        <Lock size={14} /> {pack.cost} pts
                       </button>
                     )}
                   </div>

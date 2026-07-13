@@ -127,12 +127,7 @@ const GroundingGame = () => {
 };
 
 // Componente Principal
-export const CalmingGame = ({
-  unlockedSoundpacks,
-  currentSoundpack,
-  setCurrentSoundpack,
-  onGoToStore
-}) => {
+export const CalmingGame = () => {
   const [activeGame, setActiveGame] = useState(null);
 
   if (activeGame === 'breathing') return <><BackButton onBack={() => setActiveGame(null)} /><BreathingGame /></>;
@@ -141,12 +136,7 @@ export const CalmingGame = ({
   if (activeGame === 'sensory-keyboard') return (
     <>
       <BackButton onBack={() => setActiveGame(null)} />
-      <SensoryKeyboard 
-        unlockedSoundpacks={unlockedSoundpacks}
-        currentSoundpack={currentSoundpack}
-        setCurrentSoundpack={setCurrentSoundpack}
-        onGoToStore={onGoToStore}
-      />
+      <SensoryKeyboard />
     </>
   );
 

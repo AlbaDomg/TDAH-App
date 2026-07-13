@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Delete, Trash2, Volume2, Lock } from 'lucide-react';
+import { Delete, Trash2, Volume2 } from 'lucide-react';
 import './SensoryKeyboard.css';
 
 // Audio Context Singleton and Synth Helpers
@@ -58,121 +58,24 @@ const playMechanicalClick = (now, ctx) => {
   osc.stop(now + 0.02);
 };
 
-// 2. Bubble Pop Sound
-const playBubblePop = (now, ctx) => {
-  const osc = ctx.createOscillator();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(900, now);
-  osc.frequency.exponentialRampToValueAtTime(2200, now + 0.012);
 
-  const gainNode = ctx.createGain();
-  gainNode.gain.setValueAtTime(0.18, now);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
 
-  osc.connect(gainNode);
-  gainNode.connect(ctx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.02);
-};
-
-// 3. Raindrop Sound (Pentatonic scales for harmony)
-const playRaindrop = (now, ctx) => {
-  const pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
-  const randomFreq = pentatonic[Math.floor(Math.random() * pentatonic.length)];
-
-  const osc = ctx.createOscillator();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(randomFreq, now);
-  osc.frequency.exponentialRampToValueAtTime(randomFreq * 1.5, now + 0.06);
-
-  const gainNode = ctx.createGain();
-  gainNode.gain.setValueAtTime(0.15, now);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-
-  // Subtle lowpass to make it warmer/wetter
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(2000, now);
-
-  osc.connect(filter);
-  filter.connect(gainNode);
-  gainNode.connect(ctx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.25);
-};
-
-// 4. Wood Block Sound
-const playWoodBlock = (now, ctx) => {
-  const osc1 = ctx.createOscillator();
-  const osc2 = ctx.createOscillator();
-  osc1.type = 'sine';
-  osc2.type = 'sine';
-
-  osc1.frequency.setValueAtTime(580, now);
-  osc2.frequency.setValueAtTime(810, now); // non-harmonic ratio
-
-  const gain1 = ctx.createGain();
-  const gain2 = ctx.createGain();
-
-  gain1.gain.setValueAtTime(0.18, now);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-
-  gain2.gain.setValueAtTime(0.1, now);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(650, now);
-  filter.Q.setValueAtTime(1.8, now);
-
-  osc1.connect(gain1);
-  osc2.connect(gain2);
-
-  gain1.connect(filter);
-  gain2.connect(filter);
-  filter.connect(ctx.destination);
-
-  osc1.start(now);
-  osc1.stop(now + 0.07);
-  osc2.start(now);
-  osc2.stop(now + 0.07);
-};
-
-export const SensoryKeyboard = ({
-  unlockedSoundpacks = ['mechanical'],
-  currentSoundpack = 'mechanical',
-  setCurrentSoundpack,
-  onGoToStore
-}) => {
+export const SensoryKeyboard = () => {
   const [text, setText] = useState('');
   const [activeKey, setActiveKey] = useState(null);
   const [ripples, setRipples] = useState([]);
   const keyboardContainerRef = useRef(null);
 
-  // Soundpack Options Metadata
-  const soundpacks = [
-    { id: 'mechanical', name: 'Teclado Mecánico', cost: 0, description: 'Clics mecánicos retro.' },
-    { id: 'bubbles', name: 'Burbujas Pop', cost: 150, description: 'Burbujas táctiles agudas.' },
-    { id: 'rain', name: 'Gotas de Lluvia', cost: 200, description: 'Bloops musicales fluidos.' },
-    { id: 'wood', name: 'Bloques de Madera', cost: 150, description: 'Sonidos de percusión secos.' }
-  ];
-
-  // Play audio based on soundpack
+  // Play mechanical click audio
   const triggerSound = useCallback(() => {
     try {
       const ctx = getAudioContext();
       const now = ctx.currentTime;
-
-      if (currentSoundpack === 'mechanical') playMechanicalClick(now, ctx);
-      else if (currentSoundpack === 'bubbles') playBubblePop(now, ctx);
-      else if (currentSoundpack === 'rain') playRaindrop(now, ctx);
-      else if (currentSoundpack === 'wood') playWoodBlock(now, ctx);
+      playMechanicalClick(now, ctx);
     } catch (e) {
       console.warn("Audio synthesis error:", e);
     }
-  }, [currentSoundpack]);
+  }, []);
 
   // Handle a keypress (virtual or physical)
   const handleKeyPress = useCallback((char) => {
@@ -252,43 +155,7 @@ export const SensoryKeyboard = ({
         <p>Una zona libre para escribir y relajarse con sonidos ASMR interactivos.</p>
       </div>
 
-      {/* Soundpack Selector */}
-      <div className="soundpack-selector">
-        {soundpacks.map(pack => {
-          const isUnlocked = unlockedSoundpacks.includes(pack.id);
-          const isActive = currentSoundpack === pack.id;
 
-          return (
-            <button
-              key={pack.id}
-              className={`soundpack-btn ${isActive ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`}
-              onClick={() => {
-                if (isUnlocked) {
-                  setCurrentSoundpack(pack.id);
-                  // Play a small preview
-                  try {
-                    const ctx = getAudioContext();
-                    const now = ctx.currentTime;
-                    if (pack.id === 'mechanical') playMechanicalClick(now, ctx);
-                    else if (pack.id === 'bubbles') playBubblePop(now, ctx);
-                    else if (pack.id === 'rain') playRaindrop(now, ctx);
-                    else if (pack.id === 'wood') playWoodBlock(now, ctx);
-                  } catch (e) {
-                    console.warn("Error playing preview:", e);
-                  }
-                } else {
-                  onGoToStore();
-                }
-              }}
-              title={pack.description}
-            >
-              {!isUnlocked && <Lock size={14} className="lock-icon" />}
-              <span className="pack-name">{pack.name}</span>
-              {!isUnlocked && <span className="cost-tag">{pack.cost} pts</span>}
-            </button>
-          );
-        })}
-      </div>
 
       {/* Sensory Text Display area */}
       <div className="sensory-display">

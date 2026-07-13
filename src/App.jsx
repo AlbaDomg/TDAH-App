@@ -25,8 +25,6 @@ function App() {
 
   const [activeTheme, setActiveTheme] = useLocalStorage('adhd_active_theme', 'default');
   const [unlockedThemes, setUnlockedThemes] = useLocalStorage('adhd_unlocked_themes', ['default', 'slate']);
-  const [currentSoundpack, setCurrentSoundpack] = useLocalStorage('adhd_current_soundpack', 'mechanical');
-  const [unlockedSoundpacks, setUnlockedSoundpacks] = useLocalStorage('adhd_unlocked_soundpacks', ['mechanical']);
   const [customRewards, setCustomRewards] = useLocalStorage('adhd_custom_rewards', []);
 
   useEffect(() => {
@@ -251,12 +249,7 @@ function App() {
         )}
 
         {currentView === 'calm' && (
-          <CalmingGame 
-            unlockedSoundpacks={unlockedSoundpacks}
-            currentSoundpack={currentSoundpack}
-            setCurrentSoundpack={setCurrentSoundpack}
-            onGoToStore={() => setCurrentView('store')}
-          />
+          <CalmingGame />
         )}
 
         {currentView === 'lists' && (
@@ -276,10 +269,6 @@ function App() {
             setActiveTheme={setActiveTheme}
             unlockedThemes={unlockedThemes}
             setUnlockedThemes={setUnlockedThemes}
-            unlockedSoundpacks={unlockedSoundpacks}
-            setUnlockedSoundpacks={setUnlockedSoundpacks}
-            currentSoundpack={currentSoundpack}
-            setCurrentSoundpack={setCurrentSoundpack}
             customRewards={customRewards}
             setCustomRewards={setCustomRewards}
             triggerConfetti={triggerReward}
