@@ -1,0 +1,227 @@
+.sensory-keyboard-view {
+  width: 100%;
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.keyboard-header {
+  text-align: center;
+}
+
+.keyboard-icon {
+  color: var(--color-accent-terracotta);
+  margin-bottom: 8px;
+}
+
+.keyboard-header h2 {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+
+.keyboard-header p {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+/* Soundpack Selector Styles */
+.soundpack-selector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.soundpack-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background-color: var(--color-bg-secondary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  transition: var(--transition-smooth);
+}
+
+.soundpack-btn:hover {
+  transform: translateY(-2px);
+  background-color: var(--color-bg);
+  border-color: var(--color-accent-peach);
+}
+
+.soundpack-btn.active {
+  background-color: var(--color-accent-terracotta);
+  color: white;
+  border-color: var(--color-accent-terracotta);
+}
+
+.soundpack-btn.locked {
+  opacity: 0.8;
+  border: 2px dashed var(--color-text-muted);
+  background-color: rgba(0, 0, 0, 0.02);
+  color: var(--color-text-muted);
+}
+
+.soundpack-btn.locked:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-accent-terracotta);
+}
+
+.lock-icon {
+  color: var(--color-text-muted);
+}
+
+.cost-tag {
+  font-size: 0.8rem;
+  background-color: var(--color-accent-peach);
+  color: var(--color-text-main);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  margin-left: auto;
+}
+
+/* Sensory Display Box */
+.sensory-display {
+  position: relative;
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-bg-secondary);
+  overflow: hidden;
+  padding: 12px;
+}
+
+.ripples-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.sensory-ripple {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  animation: rippleGrow 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  opacity: 0.6;
+}
+
+@keyframes rippleGrow {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(8);
+    opacity: 0;
+  }
+}
+
+.display-textarea {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.15rem;
+  color: var(--color-text-main);
+  outline: none;
+  z-index: 2;
+}
+
+.clear-display-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: var(--color-card-bg);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  z-index: 3;
+}
+
+/* Virtual Keyboard Keys */
+.virtual-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  background-color: var(--color-bg-secondary);
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.keyboard-key {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0;
+  background-color: var(--color-card-bg);
+  color: var(--color-text-main);
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 var(--color-text-muted);
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  user-select: none;
+}
+
+.keyboard-key:hover {
+  transform: none;
+  box-shadow: 0 3px 0 var(--color-text-muted);
+}
+
+.keyboard-key:active, 
+.keyboard-key.pressed {
+  transform: translateY(3px);
+  box-shadow: none;
+  background-color: var(--color-accent-peach);
+  color: var(--color-text-main);
+}
+
+.backspace-key {
+  flex: 1.5;
+  background-color: var(--color-danger-soft);
+  color: white;
+  box-shadow: 0 3px 0 #bc7272;
+}
+
+.backspace-key:hover {
+  box-shadow: 0 3px 0 #bc7272;
+}
+
+.backspace-key:active,
+.backspace-key.pressed {
+  background-color: #bc7272;
+  box-shadow: none;
+}
+
+.space-key {
+  max-width: 70%;
+  height: 44px;
+  margin-top: 4px;
+}

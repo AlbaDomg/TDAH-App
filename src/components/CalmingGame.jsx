@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Wind, CircleDashed, Eye, ArrowLeft } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Wind, CircleDashed, Eye, ArrowLeft, Keyboard } from 'lucide-react';
 import './CalmingGame.css';
+import { SensoryKeyboard } from './SensoryKeyboard';
 
 // 1. Juego de Respiración (El que ya teníamos)
 const BreathingGame = () => {
@@ -126,12 +127,28 @@ const GroundingGame = () => {
 };
 
 // Componente Principal
-export const CalmingGame = () => {
+export const CalmingGame = ({
+  unlockedSoundpacks,
+  currentSoundpack,
+  setCurrentSoundpack,
+  onGoToStore
+}) => {
   const [activeGame, setActiveGame] = useState(null);
 
   if (activeGame === 'breathing') return <><BackButton onBack={() => setActiveGame(null)} /><BreathingGame /></>;
   if (activeGame === 'bubbles') return <><BackButton onBack={() => setActiveGame(null)} /><BubbleWrapGame /></>;
   if (activeGame === 'grounding') return <><BackButton onBack={() => setActiveGame(null)} /><GroundingGame /></>;
+  if (activeGame === 'sensory-keyboard') return (
+    <>
+      <BackButton onBack={() => setActiveGame(null)} />
+      <SensoryKeyboard 
+        unlockedSoundpacks={unlockedSoundpacks}
+        currentSoundpack={currentSoundpack}
+        setCurrentSoundpack={setCurrentSoundpack}
+        onGoToStore={onGoToStore}
+      />
+    </>
+  );
 
   return (
     <div className="calming-game fade-in">
@@ -157,6 +174,12 @@ export const CalmingGame = () => {
           <Eye size={40} className="game-icon" style={{color: 'var(--color-accent-terracotta)'}}/>
           <h3>Enraizamiento (5-4-3-2-1)</h3>
           <p>Conecta con tus sentidos para volver al momento presente.</p>
+        </button>
+
+        <button className="game-option-card" onClick={() => setActiveGame('sensory-keyboard')}>
+          <Keyboard size={40} className="game-icon" style={{color: 'var(--color-accent-peach)'}}/>
+          <h3>Teclado Sensorial</h3>
+          <p>Escribe y relájate con clics ASMR interactivos y ondas de color.</p>
         </button>
       </div>
     </div>

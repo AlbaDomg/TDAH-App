@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { TaskCard } from './components/TaskCard';
 import { ParalysisMode } from './components/ParalysisMode';
@@ -9,8 +9,9 @@ import { TaskDashboard } from './components/TaskDashboard';
 import { ListsSection } from './components/ListsSection';
 import { triggerReward } from './utils/RewardSystem';
 import { requestNotificationPermission, sendNotification } from './utils/Notifications';
-import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList } from 'lucide-react';
+import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag } from 'lucide-react';
 import './App.css';
+import { DopamineStore } from './components/DopamineStore';
 
 function App() {
   const [dopaminePoints, setDopaminePoints] = useLocalStorage('adhd_points', 0);
@@ -19,8 +20,23 @@ function App() {
   const [activeTaskId, setActiveTaskId] = useLocalStorage('adhd_active_task_id', null);
   const [lists, setLists] = useLocalStorage('adhd_custom_lists', []);
   
-  // 'setup', 'focus', 'history', 'calm', 'paralysis', 'lists'
+  // 'setup', 'focus', 'history', 'calm', 'paralysis', 'lists', 'store'
   const [currentView, setCurrentView] = useLocalStorage('adhd_current_view', pendingTasks.length > 0 ? 'focus' : 'setup');
+
+  const [activeTheme, setActiveTheme] = useLocalStorage('adhd_active_theme', 'default');
+  const [unlockedThemes, setUnlockedThemes] = useLocalStorage('adhd_unlocked_themes', ['default', 'slate']);
+  const [currentSoundpack, setCurrentSoundpack] = useLocalStorage('adhd_current_soundpack', 'mechanical');
+  const [unlockedSoundpacks, setUnlockedSoundpacks] = useLocalStorage('adhd_unlocked_soundpacks', ['mechanical']);
+  const [customRewards, setCustomRewards] = useLocalStorage('adhd_custom_rewards', []);
+
+  useEffect(() => {
+    // Aplicar tema de color activo al body
+    const themeClasses = ['theme-lavender', 'theme-forest', 'theme-sunset', 'theme-cyberpunk', 'theme-slate'];
+    themeClasses.forEach(cls => document.body.classList.remove(cls));
+    if (activeTheme && activeTheme !== 'default') {
+      document.body.classList.add(`theme-${activeTheme}`);
+    }
+  }, [activeTheme]);
 
   useEffect(() => {
     // Pedir permiso de notificaciones al inicio
@@ -62,14 +78,6 @@ function App() {
     return () => clearInterval(checkSchedules);
   }, [pendingTasks]);
 
-  const handleStartDay = (tasks) => {
-    setPendingTasks(tasks);
-    if (tasks.length > 0) {
-      setActiveTaskId(tasks[0].id);
-    }
-    setCurrentView('focus');
-    sendNotification("¡Día planificado!", { body: "Es hora de empezar con tu primera tarea." });
-  };
 
   const currentTask = pendingTasks.find(t => t.id === activeTaskId) || null;
 
@@ -243,7 +251,12 @@ function App() {
         )}
 
         {currentView === 'calm' && (
-          <CalmingGame />
+          <CalmingGame 
+            unlockedSoundpacks={unlockedSoundpacks}
+            currentSoundpack={currentSoundpack}
+            setCurrentSoundpack={setCurrentSoundpack}
+            onGoToStore={() => setCurrentView('store')}
+          />
         )}
 
         {currentView === 'lists' && (
@@ -251,6 +264,24 @@ function App() {
             lists={lists} 
             setLists={setLists} 
             onAddPoints={(points) => setDopaminePoints(prev => prev + points)}
+            triggerConfetti={triggerReward}
+          />
+        )}
+
+        {currentView === 'store' && (
+          <DopamineStore
+            dopaminePoints={dopaminePoints}
+            setDopaminePoints={setDopaminePoints}
+            activeTheme={activeTheme}
+            setActiveTheme={setActiveTheme}
+            unlockedThemes={unlockedThemes}
+            setUnlockedThemes={setUnlockedThemes}
+            unlockedSoundpacks={unlockedSoundpacks}
+            setUnlockedSoundpacks={setUnlockedSoundpacks}
+            currentSoundpack={currentSoundpack}
+            setCurrentSoundpack={setCurrentSoundpack}
+            customRewards={customRewards}
+            setCustomRewards={setCustomRewards}
             triggerConfetti={triggerReward}
           />
         )}
@@ -284,6 +315,13 @@ function App() {
         >
           <Wind size={24} />
           <span>Calma</span>
+        </button>
+        <button 
+          className={`nav-item ${currentView === 'store' ? 'active' : ''}`}
+          onClick={() => setCurrentView('store')}
+        >
+          <ShoppingBag size={24} />
+          <span>Tienda</span>
         </button>
       </nav>
     </div>
