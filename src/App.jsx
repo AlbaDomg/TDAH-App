@@ -35,10 +35,58 @@ function App() {
     typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'denied'
   );
   const [activeAlarmTask, setActiveAlarmTask] = useState(null);
+  
+  // Estados de persistencia de alarmas (inicio y pausa)
+  const [isAwaitingStart, setIsAwaitingStart] = useState(false);
+  const [awaitingStartTimestamp, setAwaitingStartTimestamp] = useState(null);
+  const [timerPauseTimestamp, setTimerPauseTimestamp] = useState(null);
 
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const isAwaitingStartRef = useRef(isAwaitingStart);
+  const awaitingStartTimestampRef = useRef(awaitingStartTimestamp);
+  const timerPauseTimestampRef = useRef(timerPauseTimestamp);
+  const activeTaskIdRef = useRef(activeTaskId);
+
+  useEffect(() => { isAwaitingStartRef.current = isAwaitingStart; }, [isAwaitingStart]);
+  useEffect(() => { awaitingStartTimestampRef.current = awaitingStartTimestamp; }, [awaitingStartTimestamp]);
+  useEffect(() => { timerPauseTimestampRef.current = timerPauseTimestamp; }, [timerPauseTimestamp]);
+  useEffect(() => { activeTaskIdRef.current = activeTaskId; }, [activeTaskId]);
+
+  const handleSnoozeTask = (task) => {
+    stopAlarm();
+    setActiveAlarmTask(null);
+    setIsAwaitingStart(false);
+    setAwaitingStartTimestamp(null);
+    
+    const newScheduledTime = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    handleUpdateTask(task.id, { 
+      scheduledTime: newScheduledTime,
+      notifiedEarly: true, // evitar aviso de 15 minutos en el snooze
+      notifiedExact: false 
+    });
+  };
+
+  const handleCancelAlarm = (task) => {
+    stopAlarm();
+    setActiveAlarmTask(null);
+    setIsAwaitingStart(false);
+    setAwaitingStartTimestamp(null);
+    
+    handleUpdateTask(task.id, { 
+      scheduledTime: null,
+      notifiedEarly: false,
+      notifiedExact: false 
+    });
+  };
+
+  const currentUserState = useState(null);
+  const currentUser = currentUserState[0];
+  const setCurrentUser = currentUserState[1];
+  const authLoadingState = useState(true);
+  const authLoading = authLoadingState[0];
+  const setAuthLoading = authLoadingState[1];
+  const isSyncingState = useState(false);
+  const isSyncing = isSyncingState[0];
+  const setIsSyncing = isSyncingState[1];
 
   // Mantener referencia de tareas pendientes para evitar reiniciar el intervalo de recordatorios
   const pendingTasksRef = useRef(pendingTasks);
@@ -271,6 +319,37 @@ function App() {
       if (hasUpdates) {
         setPendingTasks(updatedTasks);
       }
+
+      // 3. Revisar si hay una tarea en espera de inicio (30 segundos sin darle a Play)
+      if (isAwaitingStartRef.current && awaitingStartTimestampRef.current) {
+        const diffInSeconds = (Date.now() - awaitingStartTimestampRef.current) / 1000;
+        if (diffInSeconds >= 30) {
+          const t = currentTasks.find(x => x.id === activeTaskIdRef.current);
+          if (t) {
+            startAlarm(activeSoundRef.current);
+            setActiveAlarmTask(t);
+            setIsAwaitingStart(false);
+            setAwaitingStartTimestamp(null);
+          }
+        }
+      }
+
+      // 4. Revisar si hay una tarea pausada por más de 5 minutos
+      if (activeTaskIdRef.current && timerPauseTimestampRef.current) {
+        const diffInMinutes = (Date.now() - timerPauseTimestampRef.current) / (1000 * 60);
+        if (diffInMinutes >= 5) {
+          const t = currentTasks.find(x => x.id === activeTaskIdRef.current);
+          if (t) {
+            sendNotification("¡El descanso terminó!", {
+              body: `Es hora de retomar tu tarea: "${t.title}". ¡Vamos!`,
+              requireInteraction: true
+            }, activeSoundRef.current);
+            startAlarm(activeSoundRef.current);
+            setActiveAlarmTask(t);
+            setTimerPauseTimestamp(Date.now()); // posponer aviso de pausa por otros 5 min si sigue en pausa
+          }
+        }
+      }
     }, 15000);
 
     return () => clearInterval(checkSchedules);
@@ -491,8 +570,25 @@ function App() {
               onComplete={handleTaskComplete}
               onStepComplete={handleStepComplete}
               onUpdateTitle={handleUpdateTitle}
-              onExitFocus={() => setActiveTaskId(null)}
+              onExitFocus={() => {
+                setActiveTaskId(null);
+                // Si sale de foco, limpiar los estados de espera y pausa
+                setIsAwaitingStart(false);
+                setAwaitingStartTimestamp(null);
+                setTimerPauseTimestamp(null);
+              }}
               onTimeUpdate={(seconds) => handleUpdateRemainingTime(currentTask.id, seconds)}
+              onTimerStateChange={(isActive) => {
+                if (isActive) {
+                  // Si el temporizador arranca, apagamos la espera de inicio y las alertas de pausa
+                  setIsAwaitingStart(false);
+                  setAwaitingStartTimestamp(null);
+                  setTimerPauseTimestamp(null);
+                } else {
+                  // Si el temporizador se pausa, guardamos el timestamp de la pausa
+                  setTimerPauseTimestamp(Date.now());
+                }
+              }}
             />
           ) : pendingTasks.length > 0 ? (
             <TaskDashboard 
@@ -608,17 +704,43 @@ function App() {
               <h3>{activeAlarmTask.title}</h3>
               {activeAlarmTask.duration && <span>⏱️ {activeAlarmTask.duration} minutos</span>}
             </div>
-            <button 
-              className="primary alarm-stop-btn"
-              onClick={() => {
-                stopAlarm();
-                setActiveAlarmTask(null);
-                setActiveTaskId(activeAlarmTask.id);
-                setCurrentView('focus');
-              }}
-            >
-              Detener Alarma y Empezar Tarea
-            </button>
+            <div className="alarm-actions-vertical" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button 
+                className="primary alarm-stop-btn"
+                onClick={() => {
+                  stopAlarm();
+                  setActiveAlarmTask(null);
+                  setActiveTaskId(activeAlarmTask.id);
+                  setCurrentView('focus');
+                  
+                  // Iniciar la cuenta atrás de 30 segundos si no arranca el foco
+                  setIsAwaitingStart(true);
+                  setAwaitingStartTimestamp(Date.now());
+                  setTimerPauseTimestamp(null);
+                }}
+              >
+                Detener Alarma y Empezar Tarea
+              </button>
+              
+              <div className="alarm-secondary-actions" style={{ display: 'flex', gap: '12px', width: '100%' }}>
+                <button 
+                  type="button"
+                  className="alarm-snooze-btn"
+                  onClick={() => handleSnoozeTask(activeAlarmTask)}
+                  style={{ flex: 1, backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-main)', border: '1px solid var(--color-bg-secondary)', padding: '10px 0', borderRadius: 'var(--radius-full)', fontWeight: 'bold', fontSize: '0.95rem' }}
+                >
+                  Posponer 10m
+                </button>
+                <button 
+                  type="button"
+                  className="alarm-cancel-btn"
+                  onClick={() => handleCancelAlarm(activeAlarmTask)}
+                  style={{ flex: 1, backgroundColor: 'var(--color-danger-soft)', color: 'white', padding: '10px 0', borderRadius: 'var(--radius-full)', fontWeight: 'bold', fontSize: '0.95rem' }}
+                >
+                  Cancelar Alarma
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

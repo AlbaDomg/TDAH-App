@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './VisualTimer.css';
 
-export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete, onTimeUpdate }) => {
+export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete, onTimeUpdate, onTimerStateChange }) => {
   const totalSeconds = durationMinutes * 60;
   const [timeLeft, setTimeLeft] = useState(() => {
     return remainingSeconds !== undefined ? remainingSeconds : totalSeconds;
@@ -32,6 +32,7 @@ export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete
     } else if (timeLeft === 0 && isActive) {
       setIsActive(false);
       if (onComplete) onComplete();
+      if (onTimerStateChange) onTimerStateChange(false);
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft, onComplete]);
@@ -45,6 +46,9 @@ export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete
     if (!nextActive && onTimeUpdate) {
       onTimeUpdate(timeLeft);
     }
+    if (onTimerStateChange) {
+      onTimerStateChange(nextActive);
+    }
   };
 
   const resetTimer = () => {
@@ -53,6 +57,9 @@ export const VisualTimer = ({ durationMinutes = 25, remainingSeconds, onComplete
     // Persistir al reiniciar
     if (onTimeUpdate) {
       onTimeUpdate(totalSeconds);
+    }
+    if (onTimerStateChange) {
+      onTimerStateChange(false);
     }
   };
 

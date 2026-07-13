@@ -4,7 +4,7 @@ import { TaskBreakdown } from './TaskBreakdown';
 import { Check, Edit2, Save, ArrowLeft } from 'lucide-react';
 import './TaskCard.css';
 
-export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle, onExitFocus, onTimeUpdate }) => {
+export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle, onExitFocus, onTimeUpdate, onTimerStateChange }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task ? task.title : '');
   const isCompletingRef = useRef(false);
@@ -58,6 +58,7 @@ export const TaskCard = ({ task, onComplete, onStepComplete, onUpdateTitle, onEx
             onTimeUpdate(seconds);
           }
         }}
+        onTimerStateChange={onTimerStateChange}
       />
       
       <TaskBreakdown 
