@@ -1,6 +1,14 @@
 import { useState } from 'react';
-import { Sparkles, Palette, Gift, Plus, Trash, Check, Lock } from 'lucide-react';
+import { Sparkles, Palette, Gift, Plus, Trash, Check, Lock, Volume2, Play } from 'lucide-react';
 import './DopamineStore.css';
+import { playNotificationSound } from '../utils/Notifications';
+
+const soundOptions = [
+  { id: 'chime', name: '🔔 Campana Clásica', description: 'Arpegio triple suave y limpio con efecto campana.' },
+  { id: 'waterDrop', name: '💧 Gota de Agua Zen', description: 'Dos sonidos rápidos y satisfactorios con deslizamiento de tono.' },
+  { id: 'magicArpeggio', name: '🪄 Arpa Mágica', description: 'Cascada arpegiada rápida en escala pentatónica.' },
+  { id: 'retroGame', name: '👾 Consola Retro', description: 'Tono juguetón de 8 bits al estilo de videojuegos clásicos.' }
+];
 
 export const DopamineStore = ({
   dopaminePoints,
@@ -11,9 +19,11 @@ export const DopamineStore = ({
   setUnlockedThemes,
   customRewards = [],
   setCustomRewards,
-  triggerConfetti
+  triggerConfetti,
+  activeSound = 'chime',
+  setActiveSound
 }) => {
-  const [activeTab, setActiveTab] = useState('themes'); // 'themes', 'custom'
+  const [activeTab, setActiveTab] = useState('themes'); // 'themes', 'custom', 'alerts'
   const [rewardTitle, setRewardTitle] = useState('');
   const [rewardCost, setRewardCost] = useState(100);
 
@@ -96,6 +106,13 @@ export const DopamineStore = ({
         >
           <Gift size={20} />
           <span>Auto-Recompensas</span>
+        </button>
+        <button 
+          className={`store-tab ${activeTab === 'alerts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('alerts')}
+        >
+          <Volume2 size={20} />
+          <span>Sonidos</span>
         </button>
       </div>
 
@@ -220,6 +237,52 @@ export const DopamineStore = ({
                   })}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'alerts' && (
+          <div className="sounds-section fade-in">
+            <div className="sounds-header">
+              <h3>Elige tu sonido de recordatorio</h3>
+              <p>Personaliza cómo te avisa la app de tus tareas programadas (tanto 15 min antes como al comenzar).</p>
+            </div>
+            
+            <div className="sounds-list">
+              {soundOptions.map((sound) => {
+                const isActive = activeSound === sound.id;
+                return (
+                  <div key={sound.id} className={`sound-card ${isActive ? 'active-sound-card' : ''}`}>
+                    <div className="sound-info">
+                      <Volume2 className="sound-icon-accent" size={24} />
+                      <div>
+                        <h4>{sound.name}</h4>
+                        <p>{sound.description}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="sound-actions">
+                      <button 
+                        type="button"
+                        className="sound-test-btn" 
+                        onClick={() => playNotificationSound(sound.id)}
+                        title="Probar sonido"
+                      >
+                        <Play size={16} />
+                        Probar
+                      </button>
+                      <button 
+                        type="button"
+                        className={`sound-select-btn ${isActive ? 'active-btn' : ''}`}
+                        onClick={() => setActiveSound(sound.id)}
+                        disabled={isActive}
+                      >
+                        {isActive ? 'Activo' : 'Seleccionar'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

@@ -367,3 +367,118 @@
   transform: none;
   box-shadow: none;
 }
+
+/* Sounds Section */
+.sounds-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sounds-header {
+  margin-bottom: 8px;
+}
+
+.sounds-header h3 {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.sounds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sound-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: var(--transition-smooth);
+}
+
+.sound-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.active-sound-card {
+  border-color: var(--color-accent-terracotta);
+  background-color: var(--color-card-bg);
+  box-shadow: var(--shadow-soft);
+}
+
+.sound-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.sound-icon-accent {
+  color: var(--color-accent-terracotta);
+  flex-shrink: 0;
+}
+
+.sound-info h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 2px;
+}
+
+.sound-info p {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.sound-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sound-test-btn {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-main);
+  border-radius: var(--radius-full);
+}
+
+.sound-test-btn:hover {
+  background-color: #E2D9C8;
+}
+
+.sound-select-btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  background-color: var(--color-accent-peach);
+  color: white;
+  border-radius: var(--radius-full);
+}
+
+.sound-select-btn.active-btn {
+  background-color: var(--color-success-olive);
+  color: white;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  .sound-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+  
+  .sound-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

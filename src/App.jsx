@@ -28,6 +28,7 @@ function App() {
   const [activeTheme, setActiveTheme] = useLocalStorage('adhd_active_theme', 'default');
   const [unlockedThemes, setUnlockedThemes] = useLocalStorage('adhd_unlocked_themes', ['default', 'slate']);
   const [customRewards, setCustomRewards] = useLocalStorage('adhd_custom_rewards', []);
+  const [activeSound, setActiveSound] = useLocalStorage('adhd_active_sound', 'chime');
 
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -38,6 +39,12 @@ function App() {
   useEffect(() => {
     pendingTasksRef.current = pendingTasks;
   }, [pendingTasks]);
+
+  // Referencia para sonido activo para evitar stale closures en el temporizador
+  const activeSoundRef = useRef(activeSound);
+  useEffect(() => {
+    activeSoundRef.current = activeSound;
+  }, [activeSound]);
 
   // 1. Suscribirse al estado de autenticación
   useEffect(() => {
@@ -57,6 +64,7 @@ function App() {
             if (data.activeTheme !== undefined) setActiveTheme(data.activeTheme);
             if (data.unlockedThemes !== undefined) setUnlockedThemes(data.unlockedThemes);
             if (data.customRewards !== undefined) setCustomRewards(data.customRewards);
+            if (data.activeSound !== undefined) setActiveSound(data.activeSound);
             if (data.currentView !== undefined) setCurrentView(data.currentView);
           }
         } catch (error) {
@@ -81,6 +89,7 @@ function App() {
       activeTheme,
       unlockedThemes,
       customRewards,
+      activeSound,
       currentView,
       lastSynced: new Date().toISOString()
     };
@@ -106,6 +115,7 @@ function App() {
     activeTheme,
     unlockedThemes,
     customRewards,
+    activeSound,
     currentView,
     currentUser,
     authLoading
@@ -124,6 +134,7 @@ function App() {
         activeTheme,
         unlockedThemes,
         customRewards,
+        activeSound,
         currentView,
         lastSynced: new Date().toISOString()
       };
@@ -151,6 +162,7 @@ function App() {
         setActiveTheme('default');
         setUnlockedThemes(['default', 'slate']);
         setCustomRewards([]);
+        setActiveSound('chime');
         setCurrentView('setup');
       } catch (error) {
         console.error("Error cerrando sesión:", error);
@@ -198,7 +210,7 @@ function App() {
           if (now >= scheduledDate && !notifiedExact) {
             sendNotification("¡Es hora de tu tarea programada!", {
               body: `Tu tarea "${task.title}" toca ahora. ¡A por ella!`
-            });
+            }, activeSoundRef.current);
             notifiedExact = true;
             updatedTask = { ...task, notifiedExact };
             hasUpdates = true;
@@ -207,7 +219,7 @@ function App() {
           else if (diffInMinutes > 0 && diffInMinutes <= 15 && !notifiedEarly) {
             sendNotification("Recordatorio anticipado", {
               body: `Faltan 15 minutos para tu tarea: "${task.title}".`
-            });
+            }, activeSoundRef.current);
             notifiedEarly = true;
             updatedTask = { ...task, notifiedEarly };
             hasUpdates = true;
@@ -467,6 +479,8 @@ function App() {
             customRewards={customRewards}
             setCustomRewards={setCustomRewards}
             triggerConfetti={triggerReward}
+            activeSound={activeSound}
+            setActiveSound={setActiveSound}
           />
         )}
       </main>
