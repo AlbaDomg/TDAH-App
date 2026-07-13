@@ -46,7 +46,16 @@ Requisitos:
       });
 
       if (!response.ok) {
-        throw new Error(`Código de error: ${response.status}`);
+        let errorMsg = `Código de error HTTP ${response.status}`;
+        try {
+          const errorJson = await response.json();
+          if (errorJson?.error?.message) {
+            errorMsg = errorJson.error.message;
+          }
+        } catch (e) {
+          console.error("Error parsing error response:", e);
+        }
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
@@ -68,7 +77,7 @@ Requisitos:
       }
     } catch (err) {
       console.error("Gemini API error:", err);
-      setApiError("Hubo un problema al generar los pasos con la IA. Por favor, verifica tu API Key.");
+      setApiError(`Error al conectar con la IA: ${err.message}. Por favor, verifica tu API Key.`);
       
       // Fallback simple por si falla para que el usuario no se quede bloqueado
       setSteps([
