@@ -90,7 +90,7 @@ export const TaskBreakdown = ({ taskName, onStepComplete }) => {
   const [steps, setSteps] = useState([]);
   const [isFragmenting, setIsFragmenting] = useState(false);
   const [isManual, setIsManual] = useState(false);
-  const [manualInputs, setManualInputs] = useState(['', '', '']);
+  const [manualInputs, setManualInputs] = useState(['', '', '', '', '']);
 
   // Fragmenta la tarea dinámicamente con IA Local adaptada
   const handleMagicFragment = () => {
@@ -151,12 +151,12 @@ export const TaskBreakdown = ({ taskName, onStepComplete }) => {
           </button>
           <button className="manual-btn" onClick={handleManualSetup}>
             <PenTool size={18} />
-            Escribir mis 3 pasos
+            Escribir mis 5 pasos
           </button>
         </div>
       ) : isManual ? (
         <div className="manual-steps-setup">
-          <p className="manual-steps-title">¿Cuáles son los 3 pequeños pasos para completar esto?</p>
+          <p className="manual-steps-title">¿Cuáles son los 5 pequeños pasos para completar esto?</p>
           <div className="manual-inputs-container">
             {manualInputs.map((val, i) => (
               <input 
