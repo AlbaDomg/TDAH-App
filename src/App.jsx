@@ -323,7 +323,7 @@ function App() {
       if (hasUpdates) {
         setPendingTasks(updatedTasks);
       }
-
+      
       // 3. Revisar si hay una tarea en espera de inicio (30 segundos sin darle a Play)
       if (isAwaitingStartRef.current && awaitingStartTimestampRef.current) {
         const diffInSeconds = (Date.now() - awaitingStartTimestampRef.current) / 1000;
@@ -354,18 +354,23 @@ function App() {
       }
 
       // 4. Revisar si hay una tarea pausada por más de 5 minutos
-      if (activeTaskIdRef.current && timerPauseTimestampRef.current) {
+      if (activeTaskIdRef.current && timerPauseTimestampRef.current && currentView === 'focus') {
         const diffInMinutes = (Date.now() - timerPauseTimestampRef.current) / (1000 * 60);
         if (diffInMinutes >= 5) {
           const t = currentTasks.find(x => x.id === activeTaskIdRef.current);
           if (t) {
-            sendNotification("¡El descanso terminó!", {
-              body: `Es hora de retomar tu tarea: "${t.title}". ¡Vamos!`,
+            sendNotification("¿Seguimos?", {
+              body: `Llevas más de 5 minutos en pausa con "${t.title}". ¿Retomamos el foco?`,
               requireInteraction: true
             }, activeSoundRef.current);
+            
             startAlarm(activeSoundRef.current);
-            setActiveAlarmTask(t);
-            setTimerPauseTimestamp(Date.now()); // posponer aviso de pausa por otros 5 min si sigue en pausa
+            setActiveAlarmTask({ ...t, isReminder: true });
+            
+            // posponer aviso de pausa por otros 5 min si sigue en pausa
+            const newTimestamp = Date.now();
+            setTimerPauseTimestamp(newTimestamp); 
+            timerPauseTimestampRef.current = newTimestamp;
           }
         }
       }
