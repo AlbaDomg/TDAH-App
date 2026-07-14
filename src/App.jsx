@@ -10,7 +10,7 @@ import { ListsSection } from './components/ListsSection';
 import { triggerReward } from './utils/RewardSystem';
 import { requestNotificationPermission, sendNotification, startAlarm, stopAlarm, playNotificationSound } from './utils/Notifications';
 import { createTimerWorker } from './utils/workerTimer';
-import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag, LogOut, Cloud, RefreshCw, Bell } from 'lucide-react';
+import { Star, ShieldAlert, ListTodo, Trophy, Wind, LayoutList, ShoppingBag, LogOut, Cloud, RefreshCw, Bell, Edit2, Check, X } from 'lucide-react';
 import './App.css';
 import { DopamineStore } from './components/DopamineStore';
 import { subscribeAuth, logOut, getUserData, saveUserData } from './firebase';
@@ -30,6 +30,9 @@ function App() {
   const [unlockedThemes, setUnlockedThemes] = useLocalStorage('adhd_unlocked_themes', ['default', 'slate']);
   const [customRewards, setCustomRewards] = useLocalStorage('adhd_custom_rewards', []);
   const [activeSound, setActiveSound] = useLocalStorage('adhd_active_sound', 'chime');
+  const [customUsername, setCustomUsername] = useLocalStorage('adhd_custom_username', '');
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [tempUsername, setTempUsername] = useState('');
 
   // Estados de notificaciones y alarmas
   const [notifPermission, setNotifPermission] = useState(
@@ -126,6 +129,7 @@ function App() {
             if (data.unlockedThemes !== undefined) setUnlockedThemes(data.unlockedThemes);
             if (data.customRewards !== undefined) setCustomRewards(data.customRewards);
             if (data.activeSound !== undefined) setActiveSound(data.activeSound);
+            if (data.customUsername !== undefined) setCustomUsername(data.customUsername);
             if (data.currentView !== undefined) setCurrentView(data.currentView);
           }
         } catch (error) {
@@ -151,6 +155,7 @@ function App() {
       unlockedThemes,
       customRewards,
       activeSound,
+      customUsername,
       currentView,
       lastSynced: new Date().toISOString()
     };
@@ -224,6 +229,7 @@ function App() {
         setUnlockedThemes(['default', 'slate']);
         setCustomRewards([]);
         setActiveSound('chime');
+        setCustomUsername('');
         setCurrentView('setup');
       } catch (error) {
         console.error("Error cerrando sesión:", error);
@@ -272,7 +278,7 @@ function App() {
           if (now >= scheduledDate && !notifiedExact) {
             // Empezar alarma en bucle continuo y mostrar modal
             startAlarm(activeSoundRef.current);
-            setActiveAlarmTask(task);
+            setActiveAlarmTask({ ...task, isReminder: false });
 
             const notif = sendNotification("¡Es hora de tu tarea programada!", {
               body: `Tu tarea "${task.title}" toca ahora. ¡Haz clic para empezar!`,
@@ -329,7 +335,19 @@ function App() {
           const t = currentTasks.find(x => x.id === activeTaskIdRef.current);
           if (t) {
             startAlarm(activeSoundRef.current);
-            setActiveAlarmTask(t);
+            setActiveAlarmTask({ ...t, isReminder: true });
+            
+            const notif = sendNotification("¡No te despistes!", {
+              body: `Han pasado 30 segundos y no has iniciado tu tarea "${t.title}". ¡Vamos!`,
+              requireInteraction: true
+            }, activeSoundRef.current);
+
+            if (notif) {
+              notif.onclick = () => {
+                window.focus();
+              };
+            }
+
             setIsAwaitingStart(false);
             setAwaitingStartTimestamp(null);
           }
@@ -543,9 +561,35 @@ function App() {
         
         <div className="header-right">
           <div className="user-profile-header">
-            <span className="user-email" title={currentUser.email}>
-              {currentUser.email.split('@')[0]}
-            </span>
+            {isEditingUsername ? (
+              <div className="username-edit-container" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <input 
+                  type="text" 
+                  value={tempUsername} 
+                  onChange={(e) => setTempUsername(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setCustomUsername(tempUsername.trim());
+                      setIsEditingUsername(false);
+                    }
+                  }}
+                  autoFocus
+                  style={{ background: 'var(--color-bg-tertiary)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '2px 6px', width: '100px', fontSize: '0.9rem' }}
+                  maxLength={15}
+                />
+                <button onClick={() => { setCustomUsername(tempUsername.trim()); setIsEditingUsername(false); }} style={{ background: 'transparent', border: 'none', color: 'var(--color-success-olive)', cursor: 'pointer', padding: '2px' }}><Check size={16} /></button>
+                <button onClick={() => setIsEditingUsername(false)} style={{ background: 'transparent', border: 'none', color: 'var(--color-danger-soft)', cursor: 'pointer', padding: '2px' }}><X size={16} /></button>
+              </div>
+            ) : (
+              <div className="username-display-container" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="user-email" title={currentUser.email} style={{ fontWeight: '500' }}>
+                  {customUsername || currentUser.email.split('@')[0]}
+                </span>
+                <button onClick={() => { setTempUsername(customUsername || currentUser.email.split('@')[0]); setIsEditingUsername(true); }} style={{ opacity: 0.7, padding: '4px', background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: '50%' }} title="Editar nombre">
+                  <Edit2 size={12} />
+                </button>
+              </div>
+            )}
             <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión">
               <LogOut size={16} />
             </button>
@@ -729,24 +773,26 @@ function App() {
                 Detener Alarma y Empezar Tarea
               </button>
               
-              <div className="alarm-secondary-actions" style={{ display: 'flex', gap: '12px', width: '100%' }}>
-                <button 
-                  type="button"
-                  className="alarm-snooze-btn"
-                  onClick={() => handleSnoozeTask(activeAlarmTask)}
-                  style={{ flex: 1, backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-main)', border: '1px solid var(--color-bg-secondary)', padding: '10px 0', borderRadius: 'var(--radius-full)', fontWeight: 'bold', fontSize: '0.95rem' }}
-                >
-                  Posponer 10m
-                </button>
-                <button 
-                  type="button"
-                  className="alarm-cancel-btn"
-                  onClick={() => handleCancelAlarm(activeAlarmTask)}
-                  style={{ flex: 1, backgroundColor: 'var(--color-danger-soft)', color: 'white', padding: '10px 0', borderRadius: 'var(--radius-full)', fontWeight: 'bold', fontSize: '0.95rem' }}
-                >
-                  Cancelar Alarma
-                </button>
-              </div>
+              {activeAlarmTask.isReminder && (
+                <div className="alarm-secondary-actions" style={{ display: 'flex', gap: '12px', width: '100%' }}>
+                  <button 
+                    type="button"
+                    className="alarm-snooze-btn"
+                    onClick={() => handleSnoozeTask(activeAlarmTask)}
+                    style={{ flex: 1, backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-main)', border: '1px solid var(--color-bg-secondary)', padding: '10px 0', borderRadius: 'var(--radius-full)', fontWeight: 'bold', fontSize: '0.95rem' }}
+                  >
+                    Posponer 10m
+                  </button>
+                  <button 
+                    type="button"
+                    className="alarm-cancel-btn"
+                    onClick={() => handleCancelAlarm(activeAlarmTask)}
+                    style={{ flex: 1, backgroundColor: 'var(--color-danger-soft)', color: 'white', padding: '10px 0', borderRadius: 'var(--radius-full)', fontWeight: 'bold', fontSize: '0.95rem' }}
+                  >
+                    Cancelar Alarma
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
