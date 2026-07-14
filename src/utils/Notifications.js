@@ -124,6 +124,14 @@ export const playNotificationSound = (soundType = 'chime') => {
 import { createTimerWorker } from './workerTimer';
 
 let alarmWorker = null;
+let cachedSWRegistration = null;
+
+// Precargar el Service Worker al iniciar para uso síncrono
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.ready.then(reg => {
+    cachedSWRegistration = reg;
+  }).catch(() => {});
+}
 
 export const startAlarm = (soundType = 'chime') => {
   if (alarmWorker) {
@@ -160,8 +168,15 @@ export const sendNotification = (title, options = {}, soundType = 'chime') => {
 
   let notification = null;
   if (Notification.permission === "granted") {
-    // Si hay un Service Worker activo, usarlo para enviar la notificación (necesario en móviles Android/iOS)
-    if ('serviceWorker' in navigator) {
+    // Usar el Service Worker cacheado si existe (evita bloqueos de promesas en móviles en segundo plano)
+    if (cachedSWRegistration) {
+      cachedSWRegistration.showNotification(title, {
+        icon: '/favicon.png',
+        badge: '/favicon.png',
+        vibrate: [200, 100, 200],
+        ...options
+      }).catch(err => console.warn('Error SW Notification:', err));
+    } else if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then((registration) => {
         registration.showNotification(title, {
           icon: '/favicon.png',
@@ -170,18 +185,7 @@ export const sendNotification = (title, options = {}, soundType = 'chime') => {
           ...options
         });
       }).catch((err) => {
-        console.warn("Error mostrando notificación vía SW, usando constructor clásico:", err);
-        // Fallback al constructor clásico
-        try {
-          notification = new Notification(title, {
-            icon: '/favicon.png',
-            badge: '/favicon.png',
-            vibrate: [200, 100, 200],
-            ...options
-          });
-        } catch (e) {
-          console.error("Fallo al crear notificación nativa clásica:", e);
-        }
+        console.warn('Error con Service Worker:', err);
       });
     } else {
       // Fallback si no hay Service Worker (navegadores de PC tradicionales)
