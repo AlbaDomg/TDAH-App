@@ -67,11 +67,19 @@ function App() {
     setIsAwaitingStart(false);
     setAwaitingStartTimestamp(null);
     
-    const newScheduledTime = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-    handleUpdateTask(task.id, { 
-      scheduledTime: newScheduledTime,
-      notifiedEarly: true, // evitar aviso de 15 minutos en el snooze
-      notifiedExact: false 
+    isAwaitingStartRef.current = false;
+    awaitingStartTimestampRef.current = null;
+
+    setPendingTasks(prev => {
+      const newTasks = prev.map(t => {
+        if (t.id === task.id) {
+          const snoozedTime = new Date(Date.now() + 10 * 60000).toISOString();
+          return { ...t, scheduledTime: snoozedTime, notifiedExact: false };
+        }
+        return t;
+      });
+      pendingTasksRef.current = newTasks; // Sync ref
+      return newTasks;
     });
   };
 
@@ -80,6 +88,9 @@ function App() {
     setActiveAlarmTask(null);
     setIsAwaitingStart(false);
     setAwaitingStartTimestamp(null);
+    
+    isAwaitingStartRef.current = false;
+    awaitingStartTimestampRef.current = null;
     
     handleUpdateTask(task.id, { 
       scheduledTime: null,
@@ -627,10 +638,15 @@ function App() {
               onUpdateTitle={handleUpdateTitle}
               onExitFocus={() => {
                 setActiveTaskId(null);
+                activeTaskIdRef.current = null;
                 // Si sale de foco, limpiar los estados de espera y pausa
                 setIsAwaitingStart(false);
                 setAwaitingStartTimestamp(null);
                 setTimerPauseTimestamp(null);
+                
+                isAwaitingStartRef.current = false;
+                awaitingStartTimestampRef.current = null;
+                timerPauseTimestampRef.current = null;
               }}
               onTimeUpdate={(seconds) => handleUpdateRemainingTime(currentTask.id, seconds)}
               onTimerStateChange={(isActive) => {
@@ -639,9 +655,15 @@ function App() {
                   setIsAwaitingStart(false);
                   setAwaitingStartTimestamp(null);
                   setTimerPauseTimestamp(null);
+                  
+                  isAwaitingStartRef.current = false;
+                  awaitingStartTimestampRef.current = null;
+                  timerPauseTimestampRef.current = null;
                 } else {
                   // Si el temporizador se pausa, guardamos el timestamp de la pausa
-                  setTimerPauseTimestamp(Date.now());
+                  const now = Date.now();
+                  setTimerPauseTimestamp(now);
+                  timerPauseTimestampRef.current = now;
                 }
               }}
             />
@@ -769,9 +791,16 @@ function App() {
                   setCurrentView('focus');
                   
                   // Iniciar la cuenta atrás de 30 segundos si no arranca el foco
+                  const now = Date.now();
                   setIsAwaitingStart(true);
-                  setAwaitingStartTimestamp(Date.now());
+                  setAwaitingStartTimestamp(now);
                   setTimerPauseTimestamp(null);
+                  
+                  // Actualizar refs sincronamente por si se minimiza la app (el render se pausará)
+                  activeTaskIdRef.current = activeAlarmTask.id;
+                  isAwaitingStartRef.current = true;
+                  awaitingStartTimestampRef.current = now;
+                  timerPauseTimestampRef.current = null;
                 }}
               >
                 Detener Alarma y Empezar Tarea
