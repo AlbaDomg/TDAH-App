@@ -168,25 +168,26 @@ export const sendNotification = (title, options = {}, soundType = 'chime') => {
 
   let notification = null;
   if (Notification.permission === "granted") {
-    // Usar el Service Worker cacheado si existe (evita bloqueos de promesas en móviles en segundo plano)
-    if (cachedSWRegistration) {
+    // Delegar la notificación directamente al Service Worker vía postMessage
+    // Esto evade el bloqueo de Android a notificaciones originadas desde ventanas en segundo plano
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SHOW_NOTIFICATION',
+        title: title,
+        options: {
+          icon: '/favicon.png',
+          badge: '/favicon.png',
+          vibrate: [200, 100, 200],
+          ...options
+        }
+      });
+    } else if (cachedSWRegistration) {
       cachedSWRegistration.showNotification(title, {
         icon: '/favicon.png',
         badge: '/favicon.png',
         vibrate: [200, 100, 200],
         ...options
       }).catch(err => console.warn('Error SW Notification:', err));
-    } else if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification(title, {
-          icon: '/favicon.png',
-          badge: '/favicon.png',
-          vibrate: [200, 100, 200],
-          ...options
-        });
-      }).catch((err) => {
-        console.warn('Error con Service Worker:', err);
-      });
     } else {
       // Fallback si no hay Service Worker (navegadores de PC tradicionales)
       try {

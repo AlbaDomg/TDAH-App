@@ -26,3 +26,13 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+
+// Escuchar mensajes desde la app principal para mostrar notificaciones directamente desde el SW
+// Esto evade el bloqueo de notificaciones en pestañas en segundo plano en Android
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+    event.waitUntil(
+      self.registration.showNotification(event.data.title, event.data.options)
+    );
+  }
+});
