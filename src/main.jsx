@@ -12,7 +12,8 @@ createRoot(document.getElementById('root')).render(
 // Registrar el Service Worker para notificaciones nativas en móviles
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    const swPath = (import.meta.env.BASE_URL || '/') + 'sw.js';
+    navigator.serviceWorker.register(swPath)
       .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
       .catch(err => console.warn('Error al registrar el Service Worker:', err));
   });

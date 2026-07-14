@@ -121,6 +121,8 @@ export const playNotificationSound = (soundType = 'chime') => {
   }
 };
 
+import { createTimerWorker } from './workerTimer';
+
 let alarmWorker = null;
 
 export const startAlarm = (soundType = 'chime') => {
@@ -132,14 +134,12 @@ export const startAlarm = (soundType = 'chime') => {
   // Reproducir inmediatamente
   playNotificationSound(soundType);
   
-  // Repetir cada 4 segundos de forma persistente usando Web Worker para evadir suspensión
-  import('./workerTimer').then(({ createTimerWorker }) => {
-    alarmWorker = createTimerWorker();
-    alarmWorker.onmessage = () => {
-      playNotificationSound(soundType);
-    };
-    alarmWorker.postMessage({ command: 'start', interval: 4000 });
-  });
+  // Repetir cada 4 segundos de forma súper robusta con un worker en segundo plano
+  alarmWorker = createTimerWorker();
+  alarmWorker.onmessage = () => {
+    playNotificationSound(soundType);
+  };
+  alarmWorker.postMessage({ command: 'start', interval: 4000 });
 };
 
 export const stopAlarm = () => {

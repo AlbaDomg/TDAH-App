@@ -49,11 +49,17 @@ function App() {
   const awaitingStartTimestampRef = useRef(awaitingStartTimestamp);
   const timerPauseTimestampRef = useRef(timerPauseTimestamp);
   const activeTaskIdRef = useRef(activeTaskId);
+  const pendingTasksRef = useRef(pendingTasks);
+  const activeSoundRef = useRef(activeSound);
 
-  useEffect(() => { isAwaitingStartRef.current = isAwaitingStart; }, [isAwaitingStart]);
-  useEffect(() => { awaitingStartTimestampRef.current = awaitingStartTimestamp; }, [awaitingStartTimestamp]);
-  useEffect(() => { timerPauseTimestampRef.current = timerPauseTimestamp; }, [timerPauseTimestamp]);
-  useEffect(() => { activeTaskIdRef.current = activeTaskId; }, [activeTaskId]);
+  // Actualizar refs de forma síncrona para que el Web Worker siempre tenga el valor más reciente
+  // incluso si la app se minimiza antes de que se ejecuten los useEffects
+  isAwaitingStartRef.current = isAwaitingStart;
+  awaitingStartTimestampRef.current = awaitingStartTimestamp;
+  timerPauseTimestampRef.current = timerPauseTimestamp;
+  activeTaskIdRef.current = activeTaskId;
+  pendingTasksRef.current = pendingTasks;
+  activeSoundRef.current = activeSound;
 
   const handleSnoozeTask = (task) => {
     stopAlarm();
@@ -92,17 +98,7 @@ function App() {
   const isSyncing = isSyncingState[0];
   const setIsSyncing = isSyncingState[1];
 
-  // Mantener referencia de tareas pendientes para evitar reiniciar el intervalo de recordatorios
-  const pendingTasksRef = useRef(pendingTasks);
-  useEffect(() => {
-    pendingTasksRef.current = pendingTasks;
-  }, [pendingTasks]);
-
-  // Referencia para sonido activo para evitar stale closures en el temporizador
-  const activeSoundRef = useRef(activeSound);
-  useEffect(() => {
-    activeSoundRef.current = activeSound;
-  }, [activeSound]);
+  // (Refs actualizadas síncronamente arriba)
 
   const handleRequestNotifPermission = async () => {
     const granted = await requestNotificationPermission();
@@ -350,6 +346,9 @@ function App() {
 
             setIsAwaitingStart(false);
             setAwaitingStartTimestamp(null);
+            
+            isAwaitingStartRef.current = false;
+            awaitingStartTimestampRef.current = null;
           }
         }
       }
@@ -372,7 +371,7 @@ function App() {
       }
     };
 
-    worker.postMessage({ command: 'start', interval: 15000 });
+    worker.postMessage({ command: 'start', interval: 1000 });
 
     return () => {
       worker.postMessage({ command: 'stop' });
